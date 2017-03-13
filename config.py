@@ -1,3 +1,4 @@
+# Note: this is an example configuration file (the API key does not actually work)
 def get_config():
     return {
         'api_key': 'dtdqz2ewbs8os0c8cscc84cko',
