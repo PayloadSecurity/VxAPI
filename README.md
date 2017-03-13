@@ -1,9 +1,7 @@
 # VxWebService Python API Connector
-# Copyright (C) 2017 Payload Security UG (haftungsbeschränkt)
-#
-# Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
-# see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
-#
+Copyright (C) 2017 Payload Security UG (haftungsbeschränkt)
+Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
+see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
 
 The VxStream Sandbox Python API Connector for VxWebService
 
@@ -79,4 +77,4 @@ After choosing the `action_name`
 
 > Most Linux OSes have two versions of `python` installed. 
 > To ensure that the program will work correctly, please use `python3`.
-> In Windows after having installed `python`, please add the parent folder to `PATH`. In this case, use `python` to callout the script.
+> In Windows after having installed `python`, please add the parent folder to `PATH` environment variable. Now use `python` to callout the script.
