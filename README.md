@@ -5,7 +5,7 @@ Copyright (C) 2017 Payload Security UG (haftungsbeschränkt)
 Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
 see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
 
-The VxStream Sandbox Python API Connector for VxWebService
+The VxStream Sandbox Python API Connector for the VxStream Sandbox VxWebService v6.2.0 (or above).
 
 ## Requirements
 
