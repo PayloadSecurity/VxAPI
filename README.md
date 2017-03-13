@@ -1,3 +1,5 @@
+![Alt text](/img/icon.png?raw=true "VxStream Sandbox API Icon")
+
 # VxWebService Python API Connector
 Copyright (C) 2017 Payload Security UG (haftungsbeschränkt)
 Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
@@ -10,7 +12,6 @@ The VxStream Sandbox Python API Connector for VxWebService
 - [Python](http://www.python.org) >= 3.4.0
 - [python-requests module](http://docs.python-requests.org/en/master/)
 - [python-colorama module](http://pypi.python.org/pypi/colorama)
-
 
 > To install some of the required python modules, please use the `pip` module manager
 > Using Debian/Ubuntu OS, this can be done by calling `sudo apt-get install python3-pip`. It will then be available via `pip3`
