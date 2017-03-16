@@ -52,6 +52,7 @@ from api_classes.api_dropped_file_submit import ApiDroppedFileSubmit
 from api_classes.api_sample_dropped_files import ApiSampleDroppedFiles
 from api_classes.api_sample_screenshots import ApiSampleScreenshots
 from api_classes.api_api_key_data import ApiApiKeyData
+from api_classes.api_api_limits import ApiApiLimits
 
 from cli_classes.cli_quota import CliQuota
 from cli_classes.cli_state import CliState
@@ -74,12 +75,15 @@ from cli_classes.cli_reanalyze import CliReanalyze
 from cli_classes.cli_dropped_file_submit import CliDroppedFileSubmit
 from cli_classes.cli_sample_dropped_files import CliSampleDroppedFiles
 from cli_classes.cli_sample_screenshots import CliSampleScreenshots
+from cli_classes.cli_api_limits import CliApiLimits
 
 from exceptions import MissingConfigurationError
 from exceptions import RetrievingApiKeyDataError
+from exceptions import ReachedApiLimitError
 
 import datetime
 import os.path
+import json
 
 from collections import OrderedDict
 from cli_classes.cli_argument_builder import CliArgumentBuilder
@@ -94,12 +98,13 @@ def main():
     
         program_name = 'VxWebService Python API Connector'
         program_version = '1.00'
-
+        vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
 
         if config['server'].endswith('/'):
             config['server'] = config['server'][:-1]
 
         map_of_available_actions = OrderedDict([
+            ('get_api_limits', CliApiLimits(ApiApiLimits(config['api_key'], config['api_secret'], config['server']))),
             ('get_feed', CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
             ('get_relationships', CliRelationships(ApiRelationships(config['api_key'], config['api_secret'], config['server']))),
             ('get_result', CliResult(ApiResult(config['api_key'], config['api_secret'], config['server']))),
@@ -123,8 +128,10 @@ def main():
             ('submit_url', CliSubmitUrl(ApiSubmitUrl(config['api_key'], config['api_secret'], config['server']))),
         ])
 
+        request_session = requests.Session()
+
         api_object_api_key_data = ApiApiKeyData(config['api_key'], config['api_secret'], config['server'])
-        api_object_api_key_data.call()
+        api_object_api_key_data.call(request_session, vxapi_cli_headers)
         if api_object_api_key_data.get_response_status_code() != 200 or api_object_api_key_data.get_response_json()['response_code'] != 0:
             raise RetrievingApiKeyDataError('Can\'t retrieve data for api_key \'{}\' in the webservice: \'{}\'. Response status code: \'{}\''.format(config['api_key'], config['server'], api_object_api_key_data.get_response_status_code()))
 
@@ -149,7 +156,38 @@ def main():
                 cli_object.init_verbose_mode()
                 print(Color.control('Running \'{}\' in version \'{}\''.format(program_name, program_version)))
 
-                print(Color.control('Started checking used API Key at ' + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())))
+                if args['chosen_action'] != 'get_api_limits':
+                    # API limits checking should be done here, to ensure that user always will be able to run command in help mode. Also there is no need to run it in non verbose mode.
+                    api_object_api_limits = ApiApiLimits(config['api_key'], config['api_secret'], config['server'])
+                    api_object_api_limits.call(request_session, vxapi_cli_headers)
+                    api_limits_response_json = api_object_api_limits.get_response_json()
+
+                    # Ignore when WebService doesn't have that endpoint
+                    if api_object_api_limits.get_response_status_code() != 404:
+                        if api_object_api_limits.get_response_status_code() != 200 or api_limits_response_json['response_code'] == -1:
+                            raise RetrievingApiKeyDataError('Can\'t check API limits before calling requested endpoint in webservice: \'{}\'. Response status code: \'{}\''.format(config['server'], api_object_api_limits.get_response_status_code()))
+
+                        if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0 and api_limits_response_json['response']['limit_reached'] is True:
+                            name_of_reached_limit = api_limits_response_json['response']['name_of_reached_limit']
+                            raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(name_of_reached_limit, api_limits_response_json['response']['used'][name_of_reached_limit]))
+
+                    if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0:
+                        api_usage = OrderedDict()
+                        api_usage_limits = api_limits_response_json['response']['limits']
+                        is_api_limit_reached = False
+
+                        for period, used_limit in api_limits_response_json['response']['used'].items():
+                            # Given request is made after checking api limits. It means that we have to add 1 to current limits, to simulate that what happen after making requested API call
+                            api_usage[period] = used_limit + 1
+                            if is_api_limit_reached is False and api_usage[period] == api_usage_limits[period]:
+                                is_api_limit_reached = True
+
+                        print(Color.control('API Limits for used API Key'))
+                        print('Webservice API usage limits: {}'.format(api_usage_limits))
+                        print('Current API usage: {}'.format(json.dumps(api_usage)))
+                        print('Is limit reached: {}'.format(Color.success('No') if is_api_limit_reached is False else Color.error('Yes')))
+
+                print(Color.control('Used API Key'))
                 print('API Key: {}'.format(used_api_key_data['api_key']))
                 print('Auth Level: {}'.format(used_api_key_data['auth_level_name']))
                 if used_api_key_data['user'] is not None:
@@ -162,7 +200,7 @@ def main():
                 print('Sent POST params: {}'.format(cli_object.api_object.data))
                 print('Sent files: {}'.format(cli_object.api_object.files))
 
-            cli_object.api_object.call()
+            cli_object.api_object.call(request_session, vxapi_cli_headers)
             if args['verbose'] is True:
                 print(Color.control('Received response at ' + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())))
                 print('Response status code: {}'.format(cli_object.get_colored_response_status_code()))

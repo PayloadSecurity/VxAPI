@@ -33,3 +33,7 @@ class MissingConfigurationError(VxError):
 class RetrievingApiKeyDataError(VxError):
     pass
 
+
+class ReachedApiLimitError(VxError):
+    pass
+

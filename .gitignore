@@ -1,1 +1,6 @@
 /config.py
+/.idea
+/__pycache__
+api_classes/__pycache__
+cli_classes/__pycache__/*.pyc
+*.pyc
