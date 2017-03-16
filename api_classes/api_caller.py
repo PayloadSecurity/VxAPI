@@ -1,7 +1,6 @@
 from exceptions import OptionNotDeclaredError
 from exceptions import ResponseObjectNotExistError
 from exceptions import UrlBuildError
-import requests
 from requests.auth import HTTPBasicAuth
 
 
@@ -24,7 +23,6 @@ class ApiCaller:
     server = ''
     endpoint_url = ''
     endpoint_auth_level = CONST_API_AUTH_LEVEL_RESTRICTED
-    user_agent = {'User-agent': 'VxStream Sandbox'}
     data = {}
     params = {}
     files = {}
@@ -52,12 +50,12 @@ class ApiCaller:
             if getattr(self, requested_field) == '':
                 raise OptionNotDeclaredError('Value for \'{}\' should be declared in class \'{}\'.'.format(requested_field, self.__class__.__name__))
 
-    def call(self):
+    def call(self, request_handler, headers={'User-agent': 'VxApi Connector'}):
         if ':' in self.endpoint_url:
             raise UrlBuildError('Can\'t call API endpoint with url \'{}\', when some placeholders are still not filled.'.format(self.endpoint_url))
 
-        caller_function = getattr(requests, self.request_method_name)
-        self.api_response = caller_function(self.server + self.endpoint_url, data=self.data, params=self.params, files=self.files, headers=self.user_agent, verify=False, auth=HTTPBasicAuth(self.api_key, self.api_secret))
+        caller_function = getattr(request_handler, self.request_method_name)
+        self.api_response = caller_function(self.server + self.endpoint_url, data=self.data, params=self.params, files=self.files, headers=headers, verify=False, auth=HTTPBasicAuth(self.api_key, self.api_secret))
         self.api_result_msg = self.prepare_response_msg()
 
     def attach_data(self, options):
