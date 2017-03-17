@@ -1,7 +1,7 @@
 ![Alt text](/img/icon.png?raw=true "VxStream Sandbox API Icon")
 
 # VxWebService Python API Connector
-The VxStream Sandbox Python API Connector for the VxStream Sandbox VxWebService v6.2.0 (or above).
+The VxStream Sandbox Python API Connector for the VxStream Sandbox VxWebService (e.g. https://www.hybrid-analysis.com/).
 
 ## Requirements
 
