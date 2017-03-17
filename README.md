@@ -1,10 +1,6 @@
 ![Alt text](/img/icon.png?raw=true "VxStream Sandbox API Icon")
 
 # VxWebService Python API Connector
-Copyright (C) 2017 Payload Security UG (haftungsbeschränkt)
-Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
-see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
-
 The VxStream Sandbox Python API Connector for the VxStream Sandbox VxWebService v6.2.0 (or above).
 
 ## Requirements
@@ -79,3 +75,10 @@ After choosing the `action_name`
 > Most Linux OSes have two versions of `python` installed. 
 > To ensure that the program will work correctly, please use `python3`.
 > In Windows after having installed `python`, please add the parent folder to `PATH` environment variable. Now use `python` to callout the script.
+
+### License
+
+Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
+see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
+
+Copyright (C) 2017 Payload Security UG (haftungsbeschränkt)
