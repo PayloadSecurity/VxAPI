@@ -13,8 +13,12 @@ class CliArgumentBuilder:
     def add_dropped_file_name_argument(self):
         self.parser.add_argument('fileName', type=str, help='Dropped file name')
 
-    def add_environment_id_argument(self):
-        self.parser.add_argument('--environmentId', '-env', type=int, help='Sample Environment ID')
+    def add_environment_id_argument(self, required: bool = False):
+        environment_id_help = 'Sample Environment ID'
+        if required is False:
+            self.parser.add_argument('--environmentId', '-env', type=int, help=environment_id_help)
+        else:
+            self.parser.add_argument('environmentId', type=int, help=environment_id_help)
 
     def add_nosharevt_argument(self):
         pass

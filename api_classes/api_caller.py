@@ -29,9 +29,9 @@ class ApiCaller:
     request_method_name = ''
 
     api_result_msg = ''
-    api_unexpected_error_msg = 'Unexpected error has occurred. Please try again later or connect with the support'
+    api_unexpected_error_msg = 'Unexpected error has occurred (HTTP code: {}). Please try again later or connect with the support'
     api_success_msg = 'Your request was successfully processed by VxStream Sandbox'
-    api_expected_error_msg = 'API error has occurred. API error code: {}, message: \'{}\''
+    api_expected_error_msg = 'API error has occurred. HTTP code: {}, API error code: {}, message: \'{}\''
     response_msg_success_nature = False
 
     api_response = None
@@ -74,7 +74,7 @@ class ApiCaller:
             raise ResponseObjectNotExistError('It\'s not possible to get response message since API was not called.')
 
         if self.api_response.headers['Content-Type'] == 'text/html':
-            self.api_result_msg = self.api_unexpected_error_msg
+            self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
         else:
             if self.api_response.status_code == 200:
                 if self.api_expected_data_type == self.CONST_EXPECTED_DATA_TYPE_JSON:
@@ -84,7 +84,7 @@ class ApiCaller:
                             self.api_result_msg = self.api_success_msg
                             self.response_msg_success_nature = True
                         else:
-                            self.api_result_msg = self.api_expected_error_msg.format(self.api_response_json['response_code'], self.api_response_json['response']['error'])
+                            self.api_result_msg = self.api_expected_error_msg.format(self.api_response.status_code, self.api_response_json['response_code'], self.api_response_json['response']['error'])
                     else:
                         self.api_result_msg = self.api_success_msg
                         self.response_msg_success_nature = True
@@ -92,7 +92,11 @@ class ApiCaller:
                     self.api_result_msg = self.api_success_msg
                     self.response_msg_success_nature = True
             else:
-                self.api_result_msg = self.api_unexpected_error_msg
+                if self.api_expected_data_type == self.CONST_EXPECTED_DATA_TYPE_JSON and bool(self.api_response.json()) is True:  # Sometimes response can has status code different than 200 and store json with error msg
+                    self.api_response_json = self.api_response.json()
+                    self.api_result_msg = self.api_expected_error_msg.format(self.api_response.status_code, self.api_response_json['response_code'], self.api_response_json['response']['error'])
+                else:
+                    self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
 
         return self.api_result_msg
 
@@ -117,7 +121,7 @@ class ApiCaller:
     def get_response_json(self):
         if self.api_response is None:
             raise ResponseObjectNotExistError('It\'s not possible to get response json since API was not called.')
-        elif self.api_response_json == {}:  # 'is' is not working properly here
+        elif bool(self.api_response_json) is False:
             self.api_response_json = self.api_response.json() if self.api_response.headers['Content-Type'] == 'application/json' else {}
 
         return self.api_response_json

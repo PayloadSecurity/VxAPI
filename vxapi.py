@@ -88,6 +88,8 @@ import json
 from collections import OrderedDict
 from cli_classes.cli_argument_builder import CliArgumentBuilder
 
+from _version import __version__
+
 def main():
     try:
         if os.path.exists('config.py'):
@@ -97,7 +99,7 @@ def main():
             raise MissingConfigurationError('Configuration is missing. Before running CLI, please copy the file \'config_tpl.pl\' from current dir, rename it to \'config.pl\', and fill')
     
         program_name = 'VxWebService Python API Connector'
-        program_version = '1.00'
+        program_version = __version__
         vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
 
         if config['server'].endswith('/'):
