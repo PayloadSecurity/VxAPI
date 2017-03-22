@@ -1,7 +1,6 @@
 from cli_classes.cli_caller import CliCaller
 from io import BytesIO
 import gzip
-from cli_classes.cli_argument_builder import CliArgumentBuilder
 
 
 class CliResult(CliCaller):
