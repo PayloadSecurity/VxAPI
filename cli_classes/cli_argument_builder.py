@@ -10,6 +10,9 @@ class CliArgumentBuilder:
     def add_sha256_argument(self):
         self.parser.add_argument('sha256', type=str, help='Sample sha256 hash')
 
+    def add_hash_argument(self):
+        self.parser.add_argument('hash', type=str, help='Sample hash (md5, sha1 or sha256)')
+
     def add_dropped_file_name_argument(self):
         self.parser.add_argument('fileName', type=str, help='Dropped file name')
 

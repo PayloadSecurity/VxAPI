@@ -1,5 +1,4 @@
 from cli_classes.cli_caller import CliCaller
-from cli_classes.cli_argument_builder import CliArgumentBuilder
 
 
 class CliSubmitUrlFile(CliCaller):

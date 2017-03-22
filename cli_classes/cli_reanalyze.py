@@ -1,5 +1,5 @@
 from cli_classes.cli_caller import CliCaller
-from cli_classes.cli_argument_builder import CliArgumentBuilder
+
 
 # hash, 'environmentId', 'nosharevt', 'nohashlookup', 'kernelmode'
 class CliReanalyze(CliCaller):

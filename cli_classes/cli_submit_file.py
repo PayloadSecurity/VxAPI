@@ -1,5 +1,5 @@
 from cli_classes.cli_caller import CliCaller
-from cli_classes.cli_argument_builder import CliArgumentBuilder
+
 
 # 'environmentId', 'user', 'nosharevt', 'nohashlookup', 'kernelmode', 'actionscript', 'hybridanalysis', 'experimentalantievasion', 'scriptlogging', 'inputsampletampering', 'torenabledanalysis', 'customdatetime', 'customcmdline', 'customruntime', 'client', 'fileurl'
 class CliSubmitFile(CliCaller):
