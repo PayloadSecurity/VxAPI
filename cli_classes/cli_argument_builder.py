@@ -10,6 +10,18 @@ class CliArgumentBuilder:
     def add_sha256_argument(self):
         self.parser.add_argument('sha256', type=str, help='Sample sha256 hash')
 
+    def add_submit_name_argument(self):
+        self.parser.add_argument('--submitname', '-sn', type=str, help='\'submission name\' field that will be used for file type detection and analysis')
+
+    def add_priority_argument(self):
+        def check_value_range(value):
+            forced_int_value = int(value)
+            if forced_int_value < 0 or forced_int_value > 100:
+                raise argparse.ArgumentTypeError('{} is not a value between 0 and 100'.format(value))
+            return forced_int_value
+
+        self.parser.add_argument('--priority', '-pr', type=check_value_range, help='Priority value between 0 (default) and 100 (highest)')
+
     def add_hash_argument(self):
         self.parser.add_argument('hash', type=str, help='Sample hash (md5, sha1 or sha256)')
 
