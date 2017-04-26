@@ -89,8 +89,12 @@ class ApiCaller:
                         self.api_result_msg = self.api_success_msg
                         self.response_msg_success_nature = True
                 else:  # Few endpoints can return files
-                    self.api_result_msg = self.api_success_msg
-                    self.response_msg_success_nature = True
+                    # Endpoint which is returning file, can also return json file. Then we need to find if we get error msg or that json file.
+                    if 'response_code' in self.get_response_json():
+                        self.api_result_msg = self.api_expected_error_msg.format(self.api_response.status_code, self.api_response_json['response_code'], self.api_response_json['response']['error'])
+                    else:
+                        self.api_result_msg = self.api_success_msg
+                        self.response_msg_success_nature = True
             else:
                 if self.api_expected_data_type == self.CONST_EXPECTED_DATA_TYPE_JSON and bool(self.api_response.json()) is True:  # Sometimes response can has status code different than 200 and store json with error msg
                     self.api_response_json = self.api_response.json()
@@ -99,6 +103,12 @@ class ApiCaller:
                     self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
 
         return self.api_result_msg
+
+    def get_api_response(self):
+        if self.api_response is None:
+            raise ResponseObjectNotExistError('It\'s not possible to get api response before doing request.')
+
+        return self.api_response
 
     def get_response_msg_success_nature(self):
         if self.api_response is None:
