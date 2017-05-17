@@ -73,7 +73,7 @@ class ApiCaller:
         if self.api_response is None:
             raise ResponseObjectNotExistError('It\'s not possible to get response message since API was not called.')
 
-        if self.api_response.headers['Content-Type'] == 'text/html':
+        if self.api_response.headers['Content-Type'].startswith('text/html'):
             self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
         else:
             if self.api_response.status_code == 200:
