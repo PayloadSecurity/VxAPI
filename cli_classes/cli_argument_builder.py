@@ -13,6 +13,9 @@ class CliArgumentBuilder:
     def add_submit_name_argument(self):
         self.parser.add_argument('--submitname', '-sn', type=str, help='\'submission name\' field that will be used for file type detection and analysis')
 
+    def add_comment_argument(self):
+        self.parser.add_argument('--comment', '-c', type=str, help='Add comment (e.g. #hashtag) to sample')
+
     def add_priority_argument(self):
         def check_value_range(value):
             forced_int_value = int(value)
