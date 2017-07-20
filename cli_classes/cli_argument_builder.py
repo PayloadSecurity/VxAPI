@@ -48,6 +48,9 @@ class CliArgumentBuilder:
     def add_file_type_argument(self):
         self.parser.add_argument('--type', '-t', type=str, choices=['bin', 'json', 'pdf', 'crt', 'maec', 'misp', 'openioc', 'html', 'pcap', 'memory', 'xml'], default='xml', help='File type to return')
 
+    def add_public_file_type_argument(self):
+        self.parser.add_argument('--type', '-t', type=str, choices=['bin', 'pcap'], default='bin', help='File type to return')
+
     def add_cli_output_argument(self):
         self.parser.add_argument('--cli_output', '-o', type=str, default='output', help='Output path')
 

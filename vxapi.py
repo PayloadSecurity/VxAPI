@@ -48,6 +48,7 @@ from api_classes.api_system_queue_size import ApiSystemQueueSize
 from api_classes.api_system_in_progress import ApiSystemInProgress
 from api_classes.api_system_heartbeat import ApiSystemHeartbeat
 from api_classes.api_result import ApiResult
+from api_classes.api_result_public import ApiResultPublic
 from api_classes.api_reanalyze import ApiReanalyze
 from api_classes.api_dropped_file_submit import ApiDroppedFileSubmit
 from api_classes.api_sample_dropped_files import ApiSampleDroppedFiles
@@ -69,6 +70,7 @@ from cli_classes.cli_system_backend import CliSystemBackend
 from cli_classes.cli_system_in_progress import CliSystemInProgress
 from cli_classes.cli_system_queue_size import CliSystemQueueSize
 from cli_classes.cli_result import CliResult
+from cli_classes.cli_result_public import CliResultPublic
 from cli_classes.cli_submit_file import CliSubmitFile
 from cli_classes.cli_submit_url_file import CliSubmitUrlFile
 from cli_classes.cli_submit_url import CliSubmitUrl
@@ -111,6 +113,7 @@ def main():
             ('get_feed', CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
             ('get_relationships', CliRelationships(ApiRelationships(config['api_key'], config['api_secret'], config['server']))),
             ('get_result', CliResult(ApiResult(config['api_key'], config['api_secret'], config['server']))),
+            ('get_public_result', CliResultPublic(ApiResultPublic(config['api_key'], config['api_secret'], config['server']))),
             ('get_sample_dropped_files', CliSampleDroppedFiles(ApiSampleDroppedFiles(config['api_key'], config['api_secret'], config['server']))),
             ('get_sample_screenshots', CliSampleScreenshots(ApiSampleScreenshots(config['api_key'], config['api_secret'], config['server']))),
             ('get_scan', CliScan(ApiScan(config['api_key'], config['api_secret'], config['server']))),
