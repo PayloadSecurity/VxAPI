@@ -29,7 +29,8 @@ class ApiCaller:
     request_method_name = ''
 
     api_result_msg = ''
-    api_unexpected_error_msg = 'Unexpected error has occurred (HTTP code: {}). Please try again later or connect with the support'
+    api_unexpected_error_msg = 'Unexpected error has occurred (HTTP code: {}). Please try again later or contact with the support'
+    api_unexpected_error_404_msg = 'Unexpected error has occurred (HTTP code: {}). This error is mostly occurring when called webservice is outdated and so does not support current action. If you believe it is an error, please contact with the support'
     api_success_msg = 'Your request was successfully processed by VxStream Sandbox'
     api_expected_error_msg = 'API error has occurred. HTTP code: {}, API error code: {}, message: \'{}\''
     response_msg_success_nature = False
@@ -74,7 +75,10 @@ class ApiCaller:
             raise ResponseObjectNotExistError('It\'s not possible to get response message since API was not called.')
 
         if self.api_response.headers['Content-Type'].startswith('text/html'):
-            self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
+            if self.api_response.status_code == 404:
+                self.api_result_msg = self.api_unexpected_error_404_msg.format(self.api_response.status_code)
+            else:
+                self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
         else:
             if self.api_response.status_code == 200:
                 if self.api_expected_data_type == self.CONST_EXPECTED_DATA_TYPE_JSON:
@@ -100,7 +104,10 @@ class ApiCaller:
                     self.api_response_json = self.api_response.json()
                     self.api_result_msg = self.api_expected_error_msg.format(self.api_response.status_code, self.api_response_json['response_code'], self.api_response_json['response']['error'])
                 else:
-                    self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
+                    if self.api_response.status_code == 404:
+                        self.api_result_msg = self.api_unexpected_error_404_msg.format(self.api_response.status_code)
+                    else:
+                        self.api_result_msg = self.api_unexpected_error_msg.format(self.api_response.status_code)
 
         return self.api_result_msg
 
