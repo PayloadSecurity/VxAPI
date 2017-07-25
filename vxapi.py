@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import sys
+import traceback
+
 from sys import platform
 
 try:
@@ -223,6 +225,7 @@ def main():
     except Exception as exc:
         print(Color.control('During the code execution, error has occurred. Please try again or contact the support.'))
         print(Color.error('Message: \'{}\'.').format(str(exc)) + '\n')
+        print(traceback.format_exc())
 
 if __name__ == "__main__":
     main()
