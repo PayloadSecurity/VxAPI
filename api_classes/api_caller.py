@@ -1,7 +1,9 @@
 from exceptions import OptionNotDeclaredError
 from exceptions import ResponseObjectNotExistError
 from exceptions import UrlBuildError
+from exceptions import JsonParseError
 from requests.auth import HTTPBasicAuth
+import json
 
 
 class ApiCaller:
@@ -139,7 +141,28 @@ class ApiCaller:
         if self.api_response is None:
             raise ResponseObjectNotExistError('It\'s not possible to get response json since API was not called.')
         elif bool(self.api_response_json) is False:
-            self.api_response_json = self.api_response.json() if self.api_response.headers['Content-Type'] == 'application/json' else {}
+            try:
+                if self.api_response.headers['Content-Type'] == 'application/json':
+                    self.api_response_json = self.api_response.json()
+                elif self.api_response.headers['Content-Type'].startswith('text/html'):
+                    # let's be more tolerant and accept situation when content type is not valid, but response has proper json
+                    self.api_response_json = json.loads(self.api_response.text)
+                else:
+                    '''
+                    Some of endpoints can return mixed content type - like file type(success) and json(controlled errors).
+                    Let's return there empty dictionary, as it's already properly handled by other project parts.
+                    '''
+                    self.api_response_json = {}
+            except json.decoder.JSONDecodeError:
+                '''
+                When response has status code equal 200 and we're expecting json, there should be json always.
+                Let's ignore other cases as for errors like 404, 500, we're getting html page instead.
+                That case should be handled in some other place.
+                '''
+                if self.get_response_status_code() == 200 and self.request_method_name == self.CONST_EXPECTED_DATA_TYPE_JSON:
+                    raise JsonParseError('Failed to parse response: \'{}\''.format(self.api_response.text))
+                else:
+                    self.api_response_json = {}
 
         return self.api_response_json
 

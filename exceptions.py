@@ -37,3 +37,6 @@ class RetrievingApiKeyDataError(VxError):
 class ReachedApiLimitError(VxError):
     pass
 
+
+class JsonParseError(VxError):
+    pass

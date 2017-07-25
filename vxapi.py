@@ -140,10 +140,16 @@ def main():
 
         api_object_api_key_data = ApiApiKeyData(config['api_key'], config['api_secret'], config['server'])
         api_object_api_key_data.call(request_session, vxapi_cli_headers)
-        if api_object_api_key_data.get_response_status_code() != 200 or api_object_api_key_data.get_response_json()['response_code'] != 0:
-            raise RetrievingApiKeyDataError('Can\'t retrieve data for api_key \'{}\' in the webservice: \'{}\'. Response status code: \'{}\''.format(config['api_key'], config['server'], api_object_api_key_data.get_response_status_code()))
+        api_key_data_json_response = api_object_api_key_data.get_response_json()
 
-        used_api_key_data = api_object_api_key_data.get_response_json()['response']
+        if api_object_api_key_data.get_response_status_code() != 200 or api_key_data_json_response['response_code'] != 0:
+            base_error_message = 'Can\'t retrieve data for given API Key \'{}\' in the webservice: \'{}\'. Response status code: \'{}\''.format(config['api_key'], config['server'], api_object_api_key_data.get_response_status_code())
+            if 'response' in api_key_data_json_response and 'error' in api_key_data_json_response['response']:
+                base_error_message += '. Response message: \'{}\''.format(api_key_data_json_response['response']['error'])
+
+            raise RetrievingApiKeyDataError(base_error_message)
+
+        used_api_key_data = api_key_data_json_response['response']
         parser = argparse.ArgumentParser(description=program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
         parser.add_argument('--version', '-ver', action='version', version='{} - version {}'.format(program_name, program_version))
         CliArgumentBuilder(parser).add_help_argument()
