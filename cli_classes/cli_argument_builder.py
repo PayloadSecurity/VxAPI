@@ -1,5 +1,6 @@
 import argparse
 from argparse import ArgumentParser
+from constants import ACTION_GET_ENVIRONMENTS
 
 
 class CliArgumentBuilder:
@@ -32,7 +33,7 @@ class CliArgumentBuilder:
         self.parser.add_argument('fileName', type=str, help='Dropped file name')
 
     def add_environment_id_argument(self, required: bool = False):
-        environment_id_help = 'Sample Environment ID'
+        environment_id_help = 'Sample Environment ID (use \'{}\' action to fetch all available)'.format(ACTION_GET_ENVIRONMENTS)
         if required is False:
             self.parser.add_argument('--environmentId', '-env', type=int, help=environment_id_help)
         else:
