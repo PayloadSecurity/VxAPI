@@ -34,6 +34,7 @@ except ImportError as exc:
 
 import argparse
 
+from constants import *
 from api_classes.api_submit_url import ApiSubmitUrl
 from api_classes.api_submit_file import ApiSubmitFile
 from api_classes.api_quota import ApiQuota
@@ -57,6 +58,7 @@ from api_classes.api_sample_dropped_files import ApiSampleDroppedFiles
 from api_classes.api_sample_screenshots import ApiSampleScreenshots
 from api_classes.api_api_key_data import ApiApiKeyData
 from api_classes.api_api_limits import ApiApiLimits
+from api_classes.api_environments import ApiEnvironments
 
 from cli_classes.cli_quota import CliQuota
 from cli_classes.cli_state import CliState
@@ -81,6 +83,7 @@ from cli_classes.cli_dropped_file_submit import CliDroppedFileSubmit
 from cli_classes.cli_sample_dropped_files import CliSampleDroppedFiles
 from cli_classes.cli_sample_screenshots import CliSampleScreenshots
 from cli_classes.cli_api_limits import CliApiLimits
+from cli_classes.cli_environments import CliEnvironments
 
 from exceptions import MissingConfigurationError
 from exceptions import RetrievingApiKeyDataError
@@ -94,6 +97,7 @@ from collections import OrderedDict
 from cli_classes.cli_argument_builder import CliArgumentBuilder
 
 from _version import __version__
+
 
 def main():
     try:
@@ -111,29 +115,30 @@ def main():
             config['server'] = config['server'][:-1]
 
         map_of_available_actions = OrderedDict([
-            ('get_api_limits', CliApiLimits(ApiApiLimits(config['api_key'], config['api_secret'], config['server']))),
-            ('get_feed', CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
-            ('get_relationships', CliRelationships(ApiRelationships(config['api_key'], config['api_secret'], config['server']))),
-            ('get_result', CliResult(ApiResult(config['api_key'], config['api_secret'], config['server']))),
-            ('get_public_result', CliResultPublic(ApiResultPublic(config['api_key'], config['api_secret'], config['server']))),
-            ('get_sample_dropped_files', CliSampleDroppedFiles(ApiSampleDroppedFiles(config['api_key'], config['api_secret'], config['server']))),
-            ('get_sample_screenshots', CliSampleScreenshots(ApiSampleScreenshots(config['api_key'], config['api_secret'], config['server']))),
-            ('get_scan', CliScan(ApiScan(config['api_key'], config['api_secret'], config['server']))),
-            ('get_state', CliState(ApiState(config['api_key'], config['api_secret'], config['server']))),
-            ('get_summary', CliSummary(ApiSummary(config['api_key'], config['api_secret'], config['server']))),
-            ('get_system_backend', CliSystemBackend(ApiSystemBackend(config['api_key'], config['api_secret'], config['server']))),
-            ('get_system_in_progress', CliSystemInProgress(ApiSystemInProgress(config['api_key'], config['api_secret'], config['server']))),
-            ('get_system_heartbeat', CliSystemHeartbeat(ApiSystemHeartbeat(config['api_key'], config['api_secret'], config['server']))),
-            ('get_system_state', CliSystemState(ApiSystemState(config['api_key'], config['api_secret'], config['server']))),
-            ('get_system_stats', CliSystemStats(ApiSystemStats(config['api_key'], config['api_secret'], config['server']))),
-            ('get_system_queue_size', CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['api_secret'], config['server']))),
-            ('get_quota', CliQuota(ApiQuota(config['api_key'], config['api_secret'], config['server']))),
-            ('reanalyze_sample', CliReanalyze(ApiReanalyze(config['api_key'], config['api_secret'], config['server']))),
-            ('search', CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
-            ('submit_dropped_file', CliDroppedFileSubmit(ApiDroppedFileSubmit(config['api_key'], config['api_secret'], config['server']))),
-            ('submit_file', CliSubmitFile(ApiSubmitFile(config['api_key'], config['api_secret'], config['server']))),
-            ('submit_url_file', CliSubmitUrlFile(ApiSubmitFile(config['api_key'], config['api_secret'], config['server']))),
-            ('submit_url', CliSubmitUrl(ApiSubmitUrl(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_API_LIMITS, CliApiLimits(ApiApiLimits(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_ENVIRONMENTS, CliEnvironments(ApiEnvironments(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_FEED, CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_RELATIONSHIPS, CliRelationships(ApiRelationships(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_RESULT, CliResult(ApiResult(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_PUBLIC_RESULT, CliResultPublic(ApiResultPublic(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SAMPLE_DROPPED_FILES, CliSampleDroppedFiles(ApiSampleDroppedFiles(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SAMPLE_SCREENSHOTS, CliSampleScreenshots(ApiSampleScreenshots(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SCAN, CliScan(ApiScan(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_STATE, CliState(ApiState(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SUMMARY, CliSummary(ApiSummary(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SYSTEM_BACKEND, CliSystemBackend(ApiSystemBackend(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SYSTEM_IN_PROGRESS, CliSystemInProgress(ApiSystemInProgress(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SYSTEM_HEARTBEAT, CliSystemHeartbeat(ApiSystemHeartbeat(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SYSTEM_STATE, CliSystemState(ApiSystemState(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SYSTEM_STATS, CliSystemStats(ApiSystemStats(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_QUOTA, CliQuota(ApiQuota(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_REANALYZE_SAMPLE, CliReanalyze(ApiReanalyze(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_SEARCH, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_SUBMIT_DROPPED_FILE, CliDroppedFileSubmit(ApiDroppedFileSubmit(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_SUBMIT_FILE, CliSubmitFile(ApiSubmitFile(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_SUBMIT_URL_FILE, CliSubmitUrlFile(ApiSubmitFile(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_SUBMIT_URL, CliSubmitUrl(ApiSubmitUrl(config['api_key'], config['api_secret'], config['server']))),
         ])
 
         request_session = requests.Session()
