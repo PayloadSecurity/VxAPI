@@ -47,7 +47,7 @@ class CliArgumentBuilder:
         self.parser.add_argument('days', type=str, help='Days')
 
     def add_file_type_argument(self):
-        self.parser.add_argument('--type', '-t', type=str, choices=['bin', 'json', 'pdf', 'crt', 'maec', 'misp', 'openioc', 'html', 'pcap', 'memory', 'xml'], default='xml', help='File type to return')
+        self.parser.add_argument('--type', '-t', type=str, choices=['bin', 'json', 'pdf', 'crt', 'maec', 'misp', 'misp-json', 'openioc', 'html', 'pcap', 'memory', 'xml'], default='xml', help='File type to return')
 
     def add_public_file_type_argument(self):
         self.parser.add_argument('--type', '-t', type=str, choices=['bin', 'pcap'], default='bin', help='File type to return')
