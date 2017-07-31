@@ -76,7 +76,12 @@ class ApiCaller:
         if self.api_response is None:
             raise ResponseObjectNotExistError('It\'s not possible to get response message since API was not called.')
 
-        if self.api_response.headers['Content-Type'].startswith('text/html'):
+        '''
+        Unfortunately some instances can return valid json with text/html content type. 
+        So we're assuming that that case it's not 'not expected error' and in other steps,
+        we will try to get proper error message from that json.
+        '''
+        if self.api_response.headers['Content-Type'].startswith('text/html') and self.api_response.status_code != 200:
             if self.api_response.status_code == 404:
                 self.api_result_msg = self.api_unexpected_error_404_msg.format(self.api_response.status_code)
             else:
@@ -84,7 +89,7 @@ class ApiCaller:
         else:
             if self.api_response.status_code == 200:
                 if self.api_expected_data_type == self.CONST_EXPECTED_DATA_TYPE_JSON:
-                    self.api_response_json = self.api_response.json()
+                    self.api_response_json = self.get_response_json()
                     if 'response_code' in self.api_response_json:  # Unfortunately not all of endpoints return the unified json.
                         if self.api_response_json['response_code'] == 0:
                             self.api_result_msg = self.api_success_msg
