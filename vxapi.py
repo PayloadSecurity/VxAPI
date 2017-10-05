@@ -190,7 +190,7 @@ def main():
                             name_of_reached_limit = api_limits_response_json['response']['name_of_reached_limit']
                             raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(name_of_reached_limit, api_limits_response_json['response']['used'][name_of_reached_limit]))
 
-                    if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0:
+                    if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0 and api_limits_response_json['response']['used']:
                         api_usage = OrderedDict()
                         api_usage_limits = api_limits_response_json['response']['limits']
                         is_api_limit_reached = False
