@@ -13,7 +13,13 @@ class CliFileSaver(CliCaller):
 
         api_response = self.api_object.api_response
 
-        f_out_name = self.cli_output_folder + '/VxStream_{}.{}'.format(self.given_args['sha256'], file_type)
+        # some older webservice instances won't have that header
+        if 'Vx-Filename' in self.api_object.api_response.headers:
+            filename = '{}_{}'.format(self.given_args['sha256'], self.api_object.api_response.headers['Vx-Filename'])
+        else:
+            filename = '{}.{}'.format(self.given_args['sha256'], file_type)
+
+        f_out_name = self.cli_output_folder + '/' + filename
         if file_type == 'memory':
             f_out_name += '.zip'
 
