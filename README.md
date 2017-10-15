@@ -58,6 +58,10 @@ Windows:
 
 ### Run the connector. Use 'help' or '-h' (on any API endpoint) to get to know about the various endpoint options. Use '-v' for a more verbose output.
 
+> Depending on your API Key privileges, you will see different options.
+> Few actions connected with system state and file submit, are only available while using premium API Key.
+> If you are interested in obtaining one, please contact with our [support](https://www.payload-security.com/contact).
+
     python3 vxapi.py -h
     
 After choosing the `action_name`
