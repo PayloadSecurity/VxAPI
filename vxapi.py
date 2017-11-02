@@ -59,6 +59,7 @@ from api_classes.api_sample_screenshots import ApiSampleScreenshots
 from api_classes.api_api_key_data import ApiApiKeyData
 from api_classes.api_api_limits import ApiApiLimits
 from api_classes.api_environments import ApiEnvironments
+from api_classes.api_url_hash import ApiUrlHash
 
 from cli_classes.cli_quota import CliQuota
 from cli_classes.cli_state import CliState
@@ -84,6 +85,7 @@ from cli_classes.cli_sample_dropped_files import CliSampleDroppedFiles
 from cli_classes.cli_sample_screenshots import CliSampleScreenshots
 from cli_classes.cli_api_limits import CliApiLimits
 from cli_classes.cli_environments import CliEnvironments
+from cli_classes.cli_url_hash import CliUrlHash
 
 from exceptions import MissingConfigurationError
 from exceptions import RetrievingApiKeyDataError
@@ -133,6 +135,7 @@ def main():
             (ACTION_GET_SYSTEM_STATS, CliSystemStats(ApiSystemStats(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_QUOTA, CliQuota(ApiQuota(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_URL_HASH, CliUrlHash(ApiUrlHash(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_REANALYZE_SAMPLE, CliReanalyze(ApiReanalyze(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_SEARCH, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_SUBMIT_DROPPED_FILE, CliDroppedFileSubmit(ApiDroppedFileSubmit(config['api_key'], config['api_secret'], config['server']))),

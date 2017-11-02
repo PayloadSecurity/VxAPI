@@ -67,6 +67,9 @@ class CliArgumentBuilder:
     def add_url_file_argument(self):
         self.parser.add_argument('fileurl', type=str, help='Url which contains file')
 
+    def add_url_hash_argument(self):
+        self.parser.add_argument('url', type=str, help='Url to hash')
+
     def add_verbose_argument(self):
         self.parser.add_argument('--verbose', '-v', help="Run command in verbose mode", action='store_true')
 
