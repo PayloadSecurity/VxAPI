@@ -61,6 +61,9 @@ class CliArgumentBuilder:
     def add_submit_file_argument(self):
         self.parser.add_argument('file', type=argparse.FileType('rb'), help='File to submit')
 
+    def add_submitted_document_password_argument(self):
+        self.parser.add_argument('--document-password', '-dp', type=str, help='Password used for archive extraction', dest="documentPassword")
+
     def add_analyze_url_argument(self):
         self.parser.add_argument('analyzeurl', type=str, help='Url which contains file')
 
