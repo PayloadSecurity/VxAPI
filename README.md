@@ -1,4 +1,4 @@
-![Alt text](/img/icon.png?raw=true "VxStream Sandbox API Icon")
+![Alt text](/img/icon.png?raw=true "Falcon Sandbox API Icon")
 
 # VxWebService Python API Connector
 The Falcon Sandbox Python API Connector (e.g. for https://www.hybrid-analysis.com/).
@@ -29,7 +29,7 @@ The configuration file specifies a triplet of api key/secret and server:
 Please fill them with the appropriate data. You can generate a public (restricted) API key by following these instructions:
 https://www.hybrid-analysis.com/apikeys/info
 
-If you have the full version of VxStream Sandbox, create any kind of API key in the admin area:
+If you have the full version of Falcon Sandbox, create any kind of API key in the admin area:
 https://www.hybrid-analysis.com/apikeys
 
 ### Install python requests module if you're using python < 3.5 [python-requests](http://docs.python-requests.org/en/master/).
@@ -72,7 +72,7 @@ After choosing the `action_name`
 
     python3 vxapi.py action_name -v
 
-![Alt text](/img/cli_example.png?raw=true "VxStream Sandbox API CLI Example Output")
+![Alt text](/img/cli_example.png?raw=true "Falcon Sandbox API CLI Example Output")
 
 ### Notes
 
