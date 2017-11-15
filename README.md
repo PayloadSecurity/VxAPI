@@ -1,7 +1,7 @@
 ![Alt text](/img/icon.png?raw=true "VxStream Sandbox API Icon")
 
 # VxWebService Python API Connector
-The VxStream Sandbox Python API Connector (e.g. for https://www.hybrid-analysis.com/).
+The Falcon Sandbox Python API Connector (e.g. for https://www.hybrid-analysis.com/).
 
 ## Requirements
 
@@ -85,4 +85,4 @@ After choosing the `action_name`
 Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
 see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
 
-Copyright (C) 2017 Payload Security UG (haftungsbeschränkt)
+Copyright (C) 2017 Hybrid Analysis GmbH
