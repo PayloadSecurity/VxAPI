@@ -33,7 +33,7 @@ class ApiCaller:
     api_result_msg = ''
     api_unexpected_error_msg = 'Unexpected error has occurred (HTTP code: {}). Please try again later or contact with the support'
     api_unexpected_error_404_msg = 'Unexpected error has occurred (HTTP code: {}). This error is mostly occurring when called webservice is outdated and so does not support current action. If you believe it is an error, please contact with the support'
-    api_success_msg = 'Your request was successfully processed by VxStream Sandbox'
+    api_success_msg = 'Your request was successfully processed by Falcon Sandbox'
     api_expected_error_msg = 'API error has occurred. HTTP code: {}, API error code: {}, message: \'{}\''
     response_msg_success_nature = False
 
