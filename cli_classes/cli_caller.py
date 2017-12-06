@@ -35,7 +35,6 @@ class CliCaller:
     def attach_args(self, args):
         self.given_args = args.copy()
         args_to_send = args.copy()
-
         for arg_to_remove in self.args_to_prevent_from_being_send:
             del args_to_send[arg_to_remove]
 
@@ -43,7 +42,7 @@ class CliCaller:
             self.cli_output_folder = args['cli_output']
             del args_to_send['cli_output']
 
-        args = {k: v for k, v in args.items() if v not in [None, '']}  # Removing some 'empty' elements from dictionary
+        args_to_send = {k: v for k, v in args_to_send.items() if v not in [None, '']}  # Removing some 'empty' elements from dictionary
 
         if 'file' in args:
             self.api_object.attach_files({'file': args['file']})  # it's already stored as file handler
