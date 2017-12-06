@@ -174,6 +174,7 @@ def main():
             if args['verbose'] is True:
                 cli_object.init_verbose_mode()
                 print(Color.control('Running \'{}\' in version \'{}\''.format(program_name, program_version)))
+                cli_object.prompt_for_sharing_confirmation()
 
                 if args['chosen_action'] != 'get_api_limits':
                     # API limits checking should be done here, to ensure that user always will be able to run command in help mode. Also there is no need to run it in non verbose mode.
@@ -218,6 +219,8 @@ def main():
                 print('Sent GET params: {}'.format(cli_object.api_object.params))
                 print('Sent POST params: {}'.format(cli_object.api_object.data))
                 print('Sent files: {}'.format(cli_object.api_object.files))
+            else:
+                cli_object.prompt_for_sharing_confirmation()
 
             cli_object.api_object.call(request_session, vxapi_cli_headers)
             if args['verbose'] is True:

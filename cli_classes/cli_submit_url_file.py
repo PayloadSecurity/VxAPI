@@ -12,4 +12,5 @@ class CliSubmitUrlFile(CliCaller):
         parser_argument_builder.add_nosharevt_argument()
         parser_argument_builder.add_submit_name_argument()
         parser_argument_builder.add_priority_argument()
-        # TODO - think about which of available flags should be available by CLI. Also check if the send parameters by API are working well on the webservice
+        parser_argument_builder.add_quiet_argument()
+        # TODO - think about which of available flags should be available by CLI.

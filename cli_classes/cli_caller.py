@@ -16,7 +16,7 @@ class CliCaller:
     result_msg_for_files = 'Response contains files. They were saved in the output folder ({}).'
     result_msg_for_json = '{}'
     cli_output_folder = ''
-    args_to_prevent_from_being_send = ['chosen_action', 'verbose']
+    args_to_prevent_from_being_send = ['chosen_action', 'verbose', 'quiet']
 
     def __init__(self, api_object: ApiCaller):
         self.api_object = api_object
@@ -36,7 +36,8 @@ class CliCaller:
         self.given_args = args.copy()
         args_to_send = args.copy()
         for arg_to_remove in self.args_to_prevent_from_being_send:
-            del args_to_send[arg_to_remove]
+            if arg_to_remove in args_to_send:
+                del args_to_send[arg_to_remove]
 
         if 'cli_output' in args:
             self.cli_output_folder = args['cli_output']
@@ -102,6 +103,15 @@ class CliCaller:
             if self.api_object.get_response_status_code() == 200 and self.api_object.get_response_msg_success_nature() is True:
                 self.create_output_dir()
                 file_saving_function()
+
+    def prompt_for_sharing_confirmation(self):
+        if 'nosharevt' in self.given_args:
+            if self.given_args['nosharevt'] is False and self.given_args['quiet'] is False:
+                submit_warning = input(
+                    'You\'re going to share submitted file with the community, are you sure about it? (tip: use \'--private\' flag to prevent sharing or \'--quiet\' to suppress this warning in future) [y/n]')
+                if not submit_warning or submit_warning[0].lower() != 'y':
+                    print('You did not indicate approval, exiting ...')
+                    exit(1)
 
     def create_output_dir(self):
         try:
