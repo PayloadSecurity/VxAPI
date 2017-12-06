@@ -49,6 +49,9 @@ class CliCaller:
             self.api_object.attach_files({'file': args['file']})  # it's already stored as file handler
             del args_to_send['file']
 
+        if 'nosharevt' in args:
+            args_to_send['nosharevt'] = 1 if args['nosharevt'] == 'yes' else 0
+
         if self.api_object.request_method_name == ApiCaller.CONST_REQUEST_METHOD_GET:
             self.api_object.attach_params(args_to_send)
         else:  # POST
@@ -104,11 +107,14 @@ class CliCaller:
                 self.create_output_dir()
                 file_saving_function()
 
-    def prompt_for_sharing_confirmation(self):
+    def prompt_for_sharing_confirmation(self, instance_url):
         if 'nosharevt' in self.given_args:
-            if self.given_args['nosharevt'] is False and self.given_args['quiet'] is False:
-                submit_warning = input(
-                    'You\'re going to share submitted file with the community, are you sure about it? (tip: use \'--private\' flag to prevent sharing or \'--quiet\' to suppress this warning in future) [y/n]')
+            if self.given_args['nosharevt'] == 'no' and self.given_args['quiet'] is False:
+                warning_msg = 'You are about to submit your file to all users of {} and the public.'.format(instance_url)
+                if 'hybrid-analysis.com' in instance_url:
+                    warning_msg += ' Please make sure you consent to the Terms and Conditions of Use and Data Privacy Policy available at: {} and {}.'.format('https://www.hybrid-analysis.com/terms', 'https://www.hybrid-analysis.com/data-protection-policy')
+                warning_msg += ' [y/n]'
+                submit_warning = input(warning_msg)
                 if not submit_warning or submit_warning[0].lower() != 'y':
                     print('You did not indicate approval, exiting ...')
                     exit(1)

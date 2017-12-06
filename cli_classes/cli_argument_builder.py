@@ -40,7 +40,7 @@ class CliArgumentBuilder:
             self.parser.add_argument('environmentId', type=int, help=environment_id_help)
 
     def add_nosharevt_argument(self):
-        self.parser.add_argument('--private', '-pv', help='Do not share with community', action='store_true', dest="nosharevt", default=False)
+        self.parser.add_argument('--private', '-pv', help='Keep it private or share with community', type=str, choices=['yes', 'no'], default='yes', dest="nosharevt")
 
     def add_days_argument(self):
         self.parser.add_argument('days', type=str, help='Days')
@@ -76,4 +76,4 @@ class CliArgumentBuilder:
         self.parser.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
 
     def add_quiet_argument(self):
-        self.parser.add_argument('--quiet', '-q',  action='store_true', default=False, help='Suppress \'share with community\' prompt')
+        self.parser.add_argument('--quiet', '-q',  action='store_true', default=False, help='Suppress all prompts and warnings')
