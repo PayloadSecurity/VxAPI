@@ -22,3 +22,5 @@ ACTION_SUBMIT_DROPPED_FILE = 'submit_dropped_file'
 ACTION_SUBMIT_FILE = 'submit_file'
 ACTION_SUBMIT_URL_FILE = 'submit_url_file'
 ACTION_SUBMIT_URL = 'submit_url'
+
+MINIMAL_SUPPORTED_INSTANCE_VERSION = '7.20'

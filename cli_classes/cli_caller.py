@@ -29,6 +29,7 @@ class CliCaller:
         parser_argument_builder = CliArgumentBuilder(child_parser)
         parser_argument_builder.add_verbose_argument()
         parser_argument_builder.add_help_argument()
+        parser_argument_builder.add_quiet_argument()
 
         return parser_argument_builder
 
@@ -118,6 +119,15 @@ class CliCaller:
                 if not submit_warning or submit_warning[0].lower() != 'y':
                     print('You did not indicate approval, exiting ...')
                     exit(1)
+
+    def check_if_version_is_supported(self, api_instance_version_object, request_handler, headers, minimal_compatible_version):
+        if self.given_args['quiet'] is False and 'hybrid-analysis.com' not in api_instance_version_object.server:
+            api_instance_version_object.call(request_handler, headers)
+            api_response = api_instance_version_object.get_api_response()
+            if api_response.status_code == 200 and api_instance_version_object.get_response_msg_success_nature() is True:
+                if api_instance_version_object.get_response_json()['response']['version'] < minimal_compatible_version:
+                    print(Color.warning('This version of VxAPI works best on VxWebService version {} (or above). Consider upgrading to ensure the flawless performance.'.format(minimal_compatible_version)))
+
 
     def create_output_dir(self):
         try:
