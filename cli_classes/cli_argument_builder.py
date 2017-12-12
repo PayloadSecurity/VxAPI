@@ -52,7 +52,7 @@ class CliArgumentBuilder:
         self.parser.add_argument('--cli_output', '-o', type=str, default='output', help='Output path')
 
     def add_query_search_argument(self):
-        self.parser.add_argument('query', type=str, help='Search query')
+        self.parser.add_argument('query', type=str, help='Search query. Once you want to search by multiple terms, wrap it into quotes e.g. \'python3 vxapi.py search "filetype_tag:doc filename:invoice"\'')
 
     def add_submit_file_argument(self):
         self.parser.add_argument('file', type=argparse.FileType('rb'), help='File to submit')
