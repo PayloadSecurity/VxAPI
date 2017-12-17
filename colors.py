@@ -9,7 +9,11 @@ class Color:
 
     @staticmethod
     def control(text):
-        return Fore.YELLOW + '\n<<< ' + str(text) + ' >>>\n' + Style.RESET_ALL
+        return Fore.YELLOW + '\n<<< ' + str(text) + ' >>>\n\r' + Style.RESET_ALL
+
+    @staticmethod
+    def warning(text):
+        return Back.YELLOW + '\n\n<<< Warning: ' + str(text) + ' >>>\n'  + Style.RESET_ALL
 
     @staticmethod
     def success(text):

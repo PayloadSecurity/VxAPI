@@ -1,6 +1,7 @@
 from cli_classes.cli_caller import CliCaller
 from io import BytesIO
 import gzip
+import os
 
 
 class CliFileSaver(CliCaller):
@@ -19,21 +20,25 @@ class CliFileSaver(CliCaller):
         else:
             filename = '{}.{}'.format(self.given_args['sha256'], file_type)
 
-        f_out_name = self.cli_output_folder + '/' + filename
-        if file_type == 'memory':
-            f_out_name += '.zip'
+        f_out_name = self.cli_output_folder
+        retrieved_filename_without_gz_ext, retrieved_file_extension = os.path.splitext(filename)
 
-        if file_type in ['xml', 'html', 'bin', 'pcap']:
+        if retrieved_file_extension == '.gz':
+            f_out_name += '/' + retrieved_filename_without_gz_ext # As we want to unpack it, put filename without '.gz. extension
             f_out = open(f_out_name, 'wb')
             try:
                 gzip_file_handle = gzip.GzipFile(fileobj=BytesIO(api_response.content))
                 f_out.write(gzip_file_handle.read())
             except Exception as e:
+                f_out_name += retrieved_file_extension
                 f_out = open(f_out_name, 'wb')
                 f_out.write(api_response.content)
                 f_out.close()
             f_out.close()
         else:
+            f_out_name += '/' + filename
+            if file_type == 'memory':
+                f_out_name += '.zip'
             f_out = open(f_out_name, 'wb')
             f_out.write(api_response.content)
             f_out.close()

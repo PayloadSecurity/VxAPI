@@ -51,7 +51,6 @@ from api_classes.api_system_queue_size import ApiSystemQueueSize
 from api_classes.api_system_in_progress import ApiSystemInProgress
 from api_classes.api_system_heartbeat import ApiSystemHeartbeat
 from api_classes.api_result import ApiResult
-from api_classes.api_result_public import ApiResultPublic
 from api_classes.api_reanalyze import ApiReanalyze
 from api_classes.api_dropped_file_submit import ApiDroppedFileSubmit
 from api_classes.api_sample_dropped_files import ApiSampleDroppedFiles
@@ -60,6 +59,7 @@ from api_classes.api_api_key_data import ApiApiKeyData
 from api_classes.api_api_limits import ApiApiLimits
 from api_classes.api_environments import ApiEnvironments
 from api_classes.api_url_hash import ApiUrlHash
+from api_classes.api_instance_version import ApiInstanceVersion
 
 from cli_classes.cli_quota import CliQuota
 from cli_classes.cli_state import CliState
@@ -75,7 +75,6 @@ from cli_classes.cli_system_backend import CliSystemBackend
 from cli_classes.cli_system_in_progress import CliSystemInProgress
 from cli_classes.cli_system_queue_size import CliSystemQueueSize
 from cli_classes.cli_result import CliResult
-from cli_classes.cli_result_public import CliResultPublic
 from cli_classes.cli_submit_file import CliSubmitFile
 from cli_classes.cli_submit_url_file import CliSubmitUrlFile
 from cli_classes.cli_submit_url import CliSubmitUrl
@@ -122,7 +121,6 @@ def main():
             (ACTION_GET_FEED, CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_RELATIONSHIPS, CliRelationships(ApiRelationships(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_RESULT, CliResult(ApiResult(config['api_key'], config['api_secret'], config['server']))),
-            (ACTION_GET_PUBLIC_RESULT, CliResultPublic(ApiResultPublic(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SAMPLE_DROPPED_FILES, CliSampleDroppedFiles(ApiSampleDroppedFiles(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SAMPLE_SCREENSHOTS, CliSampleScreenshots(ApiSampleScreenshots(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SCAN, CliScan(ApiScan(config['api_key'], config['api_secret'], config['server']))),
@@ -177,6 +175,8 @@ def main():
             if args['verbose'] is True:
                 cli_object.init_verbose_mode()
                 print(Color.control('Running \'{}\' in version \'{}\''.format(program_name, program_version)))
+                cli_object.prompt_for_sharing_confirmation(config['server'])
+                cli_object.check_if_version_is_supported(ApiInstanceVersion(config['api_key'], config['api_secret'], config['server']), request_session,vxapi_cli_headers, MINIMAL_SUPPORTED_INSTANCE_VERSION)
 
                 if args['chosen_action'] != 'get_api_limits':
                     # API limits checking should be done here, to ensure that user always will be able to run command in help mode. Also there is no need to run it in non verbose mode.
@@ -221,6 +221,9 @@ def main():
                 print('Sent GET params: {}'.format(cli_object.api_object.params))
                 print('Sent POST params: {}'.format(cli_object.api_object.data))
                 print('Sent files: {}'.format(cli_object.api_object.files))
+            else:
+                cli_object.prompt_for_sharing_confirmation(config['server'])
+                cli_object.check_if_version_is_supported(ApiInstanceVersion(config['api_key'], config['api_secret'], config['server']), request_session,vxapi_cli_headers, MINIMAL_SUPPORTED_INSTANCE_VERSION)
 
             cli_object.api_object.call(request_session, vxapi_cli_headers)
             if args['verbose'] is True:

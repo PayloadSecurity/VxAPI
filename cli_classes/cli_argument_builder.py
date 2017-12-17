@@ -40,8 +40,7 @@ class CliArgumentBuilder:
             self.parser.add_argument('environmentId', type=int, help=environment_id_help)
 
     def add_nosharevt_argument(self):
-        pass
-        # self.parser.add_argument('--nosharevt', '-n', help='Do not share with community', action='store_false') - temporary disabled due to unclear logic on webservice
+        self.parser.add_argument('--private', '-pv', help='Keep it private or share with community', type=str, choices=['yes', 'no'], default='yes', dest="nosharevt")
 
     def add_days_argument(self):
         self.parser.add_argument('days', type=str, help='Days')
@@ -49,14 +48,11 @@ class CliArgumentBuilder:
     def add_file_type_argument(self):
         self.parser.add_argument('--type', '-t', type=str, choices=['bin', 'json', 'pdf', 'crt', 'maec', 'misp', 'misp-json', 'openioc', 'html', 'pcap', 'memory', 'xml'], default='xml', help='File type to return')
 
-    def add_public_file_type_argument(self):
-        self.parser.add_argument('--type', '-t', type=str, choices=['bin', 'pcap', 'stix', 'misp', 'misp-json', 'openioc'], default='bin', help='File type to return')
-
     def add_cli_output_argument(self):
         self.parser.add_argument('--cli_output', '-o', type=str, default='output', help='Output path')
 
     def add_query_search_argument(self):
-        self.parser.add_argument('query', type=str, help='Search query')
+        self.parser.add_argument('query', type=str, help='Search query. Once you want to search by multiple terms, wrap it into quotes e.g. \'python3 vxapi.py search "filetype_tag:doc filename:invoice"\'')
 
     def add_submit_file_argument(self):
         self.parser.add_argument('file', type=argparse.FileType('rb'), help='File to submit')
@@ -78,3 +74,6 @@ class CliArgumentBuilder:
 
     def add_help_argument(self):
         self.parser.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
+
+    def add_quiet_argument(self):
+        self.parser.add_argument('--quiet', '-q',  action='store_true', default=False, help='Suppress all prompts and warnings')
