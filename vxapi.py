@@ -106,7 +106,7 @@ def main():
             from config import get_config
             config = get_config()
         else:
-            raise MissingConfigurationError('Configuration is missing. Before running CLI, please copy the file \'config_tpl.pl\' from current dir, rename it to \'config.pl\', and fill')
+            raise MissingConfigurationError('Configuration is missing. Before running CLI, please copy the file \'config_tpl.py\' from current dir, rename it to \'config.py\', and fill')
     
         program_name = 'VxWebService Python API Connector'
         program_version = __version__
