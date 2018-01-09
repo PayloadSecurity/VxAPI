@@ -85,4 +85,4 @@ After choosing the `action_name`
 Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
 see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
 
-Copyright (C) 2017 Hybrid Analysis GmbH
+Copyright (C) 2018 Hybrid Analysis GmbH
