@@ -1,6 +1,8 @@
 ACTION_GET_API_LIMITS = 'get_api_limits'
 ACTION_GET_ENVIRONMENTS = 'get_environments'
 ACTION_GET_FEED = 'get_feed'
+ACTION_GET_NSSF_FILES = 'get_nssf_files'
+ACTION_GET_NSSF_LIST = 'get_nssf_list'
 ACTION_GET_RELATIONSHIPS = 'get_relationships'
 ACTION_GET_RESULT = 'get_result'
 ACTION_GET_SAMPLE_DROPPED_FILES = 'get_sample_dropped_files'
