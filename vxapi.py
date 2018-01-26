@@ -44,6 +44,8 @@ from api_classes.api_summary import ApiSummary
 from api_classes.api_search import ApiSearch
 from api_classes.api_relationships import ApiRelationships
 from api_classes.api_feed import ApiFeed
+from api_classes.api_nssf_download import ApiNssfDownload
+from api_classes.api_nssf_list import ApiNssfList
 from api_classes.api_system_stats import ApiSystemStats
 from api_classes.api_system_state import ApiSystemState
 from api_classes.api_system_backend import ApiSystemBackend
@@ -68,6 +70,8 @@ from cli_classes.cli_summary import CliSummary
 from cli_classes.cli_search import CliSearch
 from cli_classes.cli_relationships import CliRelationships
 from cli_classes.cli_feed import CliFeed
+from cli_classes.cli_nssf_download import CliNssfDownload
+from cli_classes.cli_nssf_list import CliNssfList
 from cli_classes.cli_system_stats import CliSystemStats
 from cli_classes.cli_system_state import CliSystemState
 from cli_classes.cli_system_heartbeat import CliSystemHeartbeat
@@ -119,6 +123,8 @@ def main():
             (ACTION_GET_API_LIMITS, CliApiLimits(ApiApiLimits(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_ENVIRONMENTS, CliEnvironments(ApiEnvironments(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_FEED, CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_NSSF_FILES, CliNssfDownload(ApiNssfDownload(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_NSSF_LIST, CliNssfList(ApiNssfList(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_RELATIONSHIPS, CliRelationships(ApiRelationships(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_RESULT, CliResult(ApiResult(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SAMPLE_DROPPED_FILES, CliSampleDroppedFiles(ApiSampleDroppedFiles(config['api_key'], config['api_secret'], config['server']))),
@@ -166,7 +172,7 @@ def main():
             if cli_object.api_object.endpoint_auth_level <= used_api_key_data['auth_level']:
                 child_parser = subparsers.add_parser(name=name, help=cli_object.help_description, add_help=False)
                 cli_object.add_parser_args(child_parser)
-    
+
         args = vars(parser.parse_args())
 
         if args['chosen_action'] is not None:

@@ -6,6 +6,7 @@ import errno
 import os
 import json
 from cli_classes.cli_argument_builder import CliArgumentBuilder
+import datetime
 
 
 class CliCaller:
@@ -99,14 +100,18 @@ class CliCaller:
         return self.result_msg_for_files.format(self.get_processed_output_path())
 
     def do_post_processing(self):
-        if self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_FILE:
-            file_saving_function = getattr(self, 'save_files', None)
-            if not callable(file_saving_function):
-                raise FilesSavingMethodNotDeclaredError('Can\'t do post processing, since method \'save_files\' is not declared in {} class.'.format(self.__class__.__name__))
+        '''
+        When saving file function is there and expected data type is different than file, let's call it.
+        When we're expecting file in response, saving file function is obligatory
+        '''
+        file_saving_function = getattr(self, 'save_files', None)
 
-            if self.api_object.get_response_status_code() == 200 and self.api_object.get_response_msg_success_nature() is True:
-                self.create_output_dir()
-                file_saving_function()
+        if self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_FILE and not callable(file_saving_function):
+            raise FilesSavingMethodNotDeclaredError('Can\'t do post processing, since method \'save_files\' is not declared in {} class.'.format(self.__class__.__name__))
+
+        if callable(file_saving_function) and self.api_object.get_response_status_code() == 200 and self.api_object.get_response_msg_success_nature() is True:
+            self.create_output_dir()
+            file_saving_function()
 
     def prompt_for_sharing_confirmation(self, instance_url):
         if 'nosharevt' in self.given_args:
@@ -139,3 +144,7 @@ class CliCaller:
                 raise Exception('Failed to create directory in \'{}\'. Possibly it\'s connected with file rights.'.format(self.get_processed_output_path()))
             else:
                 raise
+
+    def get_date_string(self):
+        now = datetime.datetime.now()
+        return '{}_{}_{}_{}_{}_{}'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
