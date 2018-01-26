@@ -83,7 +83,7 @@ class CliArgumentBuilder:
         self.parser.add_argument('--hash-format', '-hf', choices=['md5', 'sha1', 'sha256', 'sha256'], default='md5', help='Type of returned hash', dest="format")
 
     def add_visibility_argument(self):
-        self.parser.add_argument('--visibility', '-vs', choices=['all', 'private', 'public'], default='all', help='Samples visibility')
+        self.parser.add_argument('--visibility', '-vs', choices=['all', 'private', 'public'], default='public', help='Samples visibility')
 
     def add_verdict_format_argument(self):
         self.parser.add_argument('--verdict-format', '-vf', choices=['all', 'malicious', 'clean'], default='all', help='Samples verdict format', dest="type")
