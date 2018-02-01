@@ -8,22 +8,11 @@ class CliNssfDownload(CliFileSaver):
 
     def add_parser_args(self, child_parser):
         parser_argument_builder = super(CliNssfDownload, self).add_parser_args(child_parser)
-        parser_argument_builder.add_file_with_nssf_list()
+        parser_argument_builder.add_file_with_hash_list()
         parser_argument_builder.add_cli_output_argument()
 
     def attach_args(self, args):
-        with args['hash_list'] as file:
-            hashes = file.read().splitlines()
-
-            if not hashes:
-                raise Exception('Given file does not contain any data.')
-
-            for key, value in enumerate(hashes):
-                args['hashes[{}]'.format(key)] = value
-
-        del args['hash_list']
-
-        super(CliNssfDownload, self).attach_args(args)
+        super(CliNssfDownload, self).attach_args(self.convert_file_hashes_to_array(args))
 
     def save_files(self):
         api_response = self.api_object.api_response

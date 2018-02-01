@@ -40,7 +40,9 @@ from api_classes.api_submit_file import ApiSubmitFile
 from api_classes.api_quota import ApiQuota
 from api_classes.api_state import ApiState
 from api_classes.api_scan import ApiScan
+from api_classes.api_bulk_scan import ApiBulkScan
 from api_classes.api_summary import ApiSummary
+from api_classes.api_bulk_summary import ApiBulkSummary
 from api_classes.api_search import ApiSearch
 from api_classes.api_relationships import ApiRelationships
 from api_classes.api_feed import ApiFeed
@@ -66,7 +68,9 @@ from api_classes.api_instance_version import ApiInstanceVersion
 from cli_classes.cli_quota import CliQuota
 from cli_classes.cli_state import CliState
 from cli_classes.cli_scan import CliScan
+from cli_classes.cli_bulk_scan import CliBulkScan
 from cli_classes.cli_summary import CliSummary
+from cli_classes.cli_bulk_summary import CliBulkSummary
 from cli_classes.cli_search import CliSearch
 from cli_classes.cli_relationships import CliRelationships
 from cli_classes.cli_feed import CliFeed
@@ -130,8 +134,10 @@ def main():
             (ACTION_GET_SAMPLE_DROPPED_FILES, CliSampleDroppedFiles(ApiSampleDroppedFiles(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SAMPLE_SCREENSHOTS, CliSampleScreenshots(ApiSampleScreenshots(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SCAN, CliScan(ApiScan(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_BULK_SCAN, CliBulkScan(ApiBulkScan(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_STATE, CliState(ApiState(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SUMMARY, CliSummary(ApiSummary(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_BULK_SUMMARY, CliBulkSummary(ApiBulkSummary(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SYSTEM_BACKEND, CliSystemBackend(ApiSystemBackend(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SYSTEM_IN_PROGRESS, CliSystemInProgress(ApiSystemInProgress(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SYSTEM_HEARTBEAT, CliSystemHeartbeat(ApiSystemHeartbeat(config['api_key'], config['api_secret'], config['server']))),
