@@ -148,3 +148,17 @@ class CliCaller:
     def get_date_string(self):
         now = datetime.datetime.now()
         return '{}_{}_{}_{}_{}_{}'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
+
+    def convert_file_hashes_to_array(self, args, file_arg='hash_list', key_of_array_arg='hashes'):
+        with args[file_arg] as file:
+            hashes = file.read().splitlines()
+
+            if not hashes:
+                raise Exception('Given file does not contain any data.')
+
+            for key, value in enumerate(hashes):
+                args['{}[{}]'.format(key_of_array_arg, key)] = value
+
+        del args[file_arg]
+
+        return args
