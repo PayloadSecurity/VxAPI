@@ -1,6 +1,8 @@
 from cli_classes.cli_caller import CliCaller
 
 import os
+import gzip
+
 
 class CliNssfDownload(CliCaller):
 
@@ -26,7 +28,6 @@ class CliNssfDownload(CliCaller):
 
         api_response = self.api_object.api_response
         splitted_file = api_response.content.splitlines(True)
-
         boundary = splitted_file[0].decode('utf-8').strip()
         lines_of_files = []
         current_file = 0
@@ -59,8 +60,20 @@ class CliNssfDownload(CliCaller):
 
         for x, line_data in enumerate(lines_of_files):
             filename = line_data[0]
+            path_file = '{}/{}'.format(dir, filename)
             file_bytes = splitted_file[line_data[1]:line_data[2]]
-            f_out = open('{}/{}'.format(dir, filename), 'wb')
+            last_line = splitted_file[(line_data[2] - 1):line_data[2]][0]
+            file_bytes[-1] = last_line.split(b'\r\n')[0] # removing new line chars from the last line
+            f_out = open(path_file, 'wb')
             f_out.writelines(file_bytes)
             f_out.close()
 
+            saved_file_filename_without_ext, saved_file_extension = os.path.splitext(filename)
+
+            if saved_file_extension == '.gz':
+                decompressed_file_path = '{}/{}'.format(dir, saved_file_filename_without_ext)
+                gzip_f_in = gzip.GzipFile(path_file)
+                f_out = open(decompressed_file_path, 'wb')
+                f_out.write(gzip_f_in.read())
+                f_out.close()
+                os.remove(path_file)
