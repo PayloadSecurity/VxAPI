@@ -16,7 +16,10 @@ class CliNssfList(CliCaller):
         parser_argument_builder.add_cli_output_argument()
 
     def get_result_msg(self):
-        super(CliNssfList, self).get_result_msg()  # just to throw exception if needed
+        msg = super(CliNssfList, self).get_result_msg()  # just to throw exception if needed
+        if self.api_object.get_response_msg_success_nature() is False:
+            return msg
+
         response_json = self.api_object.get_response_json().get('response')
 
         return self.get_result_msg_for_files() if response_json else 'As response does not have any hashes, file was not saved.'
