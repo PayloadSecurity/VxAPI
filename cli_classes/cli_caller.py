@@ -75,7 +75,7 @@ class CliCaller:
             raise ResponseTextContentTypeError('Can\'t print result, since it\'s \'text/html\' instead of expected content type with \'{}\' on board.'.format(self.api_object.api_expected_data_type))
 
         if self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_JSON:
-            return self.result_msg_for_json.format(json.dumps(self.api_object.get_response_json(), indent=4, sort_keys=True))
+            return self.result_msg_for_json.format(json.dumps(self.api_object.get_response_json(), indent=4, sort_keys=True, ensure_ascii=False))
         elif self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_FILE:
             if self.api_object.get_response_msg_success_nature() is True:
                 return self.get_result_msg_for_files()
