@@ -51,8 +51,9 @@ class CliCaller:
             self.api_object.attach_files({'file': args['file']})  # it's already stored as file handler
             del args_to_send['file']
 
-        if 'nosharevt' in args:
-            args_to_send['nosharevt'] = 1 if args['nosharevt'] == 'yes' else 0
+        for param in ['nosharevt', 'allowCommunityAccess']:
+            if param in args:
+                args_to_send[param] = 1 if args[param] == 'yes' else 0
 
         if self.api_object.request_method_name == ApiCaller.CONST_REQUEST_METHOD_GET:
             self.api_object.attach_params(args_to_send)

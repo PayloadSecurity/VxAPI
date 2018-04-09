@@ -41,7 +41,7 @@ class CliArgumentBuilder:
             self.parser.add_argument('environmentId', type=int, help=environment_id_help)
 
     def add_nosharevt_argument(self):
-        self.parser.add_argument('--private', '-pv', help='Keep it private or share with community', type=str, choices=['yes', 'no'], default='yes', dest="nosharevt")
+        self.parser.add_argument('--private', '-pv', help='When set to \'yes\', the sample is never shared with any third party', type=str, choices=['yes', 'no'], default='yes', dest="nosharevt")
 
     def add_days_argument(self):
         self.parser.add_argument('days', type=str, help='Days')
@@ -77,7 +77,7 @@ class CliArgumentBuilder:
         self.parser.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
 
     def add_quiet_argument(self):
-        self.parser.add_argument('--quiet', '-q',  action='store_true', default=False, help='Suppress all prompts and warnings')
+        self.parser.add_argument('--quiet', '-q', action='store_true', default=False, help='Suppress all prompts and warnings')
 
     def add_hash_format_argument(self):
         self.parser.add_argument('--hash-format', '-hf', choices=['md5', 'sha1', 'sha256', 'sha256'], default='md5', help='Type of returned hash', dest="format")
@@ -99,4 +99,7 @@ class CliArgumentBuilder:
 
     def add_file_with_hash_list_with_envs(self):
         self.parser.add_argument('hash_list_with_envs', type=argparse.FileType('r'), help='Path to file containing list of sample hashes with environment IDs (hash:envId)')
+
+    def add_allow_community_access_param(self):
+        self.parser.add_argument('--allow_community_access', '-aca', choices=['yes', 'no'], default='yes', type=str, help='When set \'yes\', the sample will be available for the community.', dest='allowCommunityAccess')
 
