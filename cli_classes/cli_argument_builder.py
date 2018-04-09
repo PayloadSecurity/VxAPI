@@ -101,5 +101,5 @@ class CliArgumentBuilder:
         self.parser.add_argument('hash_list_with_envs', type=argparse.FileType('r'), help='Path to file containing list of sample hashes with environment IDs (hash:envId)')
 
     def add_allow_community_access_param(self):
-        self.parser.add_argument('--allow_community_access', '-aca', choices=['yes', 'no'], default='yes', type=str, help='When set \'yes\', the sample will be available for the community.', dest='allowCommunityAccess')
+        self.parser.add_argument('--allow_community_access', '-aca', choices=['yes', 'no'], default='yes', type=str, help='When set \'yes\', the sample will be available for vetted users of the HA community or custom application server', dest='allowCommunityAccess')
 
