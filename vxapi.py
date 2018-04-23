@@ -37,7 +37,7 @@ import argparse
 from constants import *
 from api_classes.api_submit_url import ApiSubmitUrl
 from api_classes.api_submit_file import ApiSubmitFile
-from api_classes.api_quota import ApiQuota
+from api_classes.api_api_submission_limits import ApiApiSubmissionLimits
 from api_classes.api_state import ApiState
 from api_classes.api_scan import ApiScan
 from api_classes.api_bulk_scan import ApiBulkScan
@@ -60,12 +60,14 @@ from api_classes.api_dropped_file_submit import ApiDroppedFileSubmit
 from api_classes.api_sample_dropped_files import ApiSampleDroppedFiles
 from api_classes.api_sample_screenshots import ApiSampleScreenshots
 from api_classes.api_api_key_data import ApiApiKeyData
-from api_classes.api_api_limits import ApiApiLimits
+from api_classes.api_api_query_limits import ApiApiQueryLimits
+from api_classes.api_api_limits_summary import ApiApiLimitsSummary
 from api_classes.api_environments import ApiEnvironments
 from api_classes.api_url_hash import ApiUrlHash
 from api_classes.api_instance_version import ApiInstanceVersion
 
-from cli_classes.cli_quota import CliQuota
+from cli_classes.cli_api_submission_limits import CliApiSubmissionLimits
+from cli_classes.cli_api_limits_summary import CliApiLimitsSummary
 from cli_classes.cli_state import CliState
 from cli_classes.cli_scan import CliScan
 from cli_classes.cli_bulk_scan import CliBulkScan
@@ -90,7 +92,7 @@ from cli_classes.cli_reanalyze import CliReanalyze
 from cli_classes.cli_dropped_file_submit import CliDroppedFileSubmit
 from cli_classes.cli_sample_dropped_files import CliSampleDroppedFiles
 from cli_classes.cli_sample_screenshots import CliSampleScreenshots
-from cli_classes.cli_api_limits import CliApiLimits
+from cli_classes.cli_api_query_limits import CliApiQueryLimits
 from cli_classes.cli_environments import CliEnvironments
 from cli_classes.cli_url_hash import CliUrlHash
 
@@ -115,16 +117,17 @@ def main():
             config = get_config()
         else:
             raise MissingConfigurationError('Configuration is missing. Before running CLI, please copy the file \'config_tpl.py\' from current dir, rename it to \'config.py\', and fill')
-    
+
         program_name = 'VxWebService Python API Connector'
         program_version = __version__
         vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
 
         if config['server'].endswith('/'):
             config['server'] = config['server'][:-1]
-
         map_of_available_actions = OrderedDict([
-            (ACTION_GET_API_LIMITS, CliApiLimits(ApiApiLimits(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_API_LIMITS, CliApiLimitsSummary(ApiApiLimitsSummary(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_API_QUERY_LIMITS, CliApiQueryLimits(ApiApiQueryLimits(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_GET_API_SUBMISSION_LIMITS, CliApiSubmissionLimits(ApiApiSubmissionLimits(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_ENVIRONMENTS, CliEnvironments(ApiEnvironments(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_FEED, CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_NSSF_FILES, CliNssfDownload(ApiNssfDownload(config['api_key'], config['api_secret'], config['server']))),
@@ -144,7 +147,6 @@ def main():
             (ACTION_GET_SYSTEM_STATE, CliSystemState(ApiSystemState(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SYSTEM_STATS, CliSystemStats(ApiSystemStats(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['api_secret'], config['server']))),
-            (ACTION_GET_QUOTA, CliQuota(ApiQuota(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_URL_HASH, CliUrlHash(ApiUrlHash(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_REANALYZE_SAMPLE, CliReanalyze(ApiReanalyze(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_SEARCH, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
@@ -153,6 +155,7 @@ def main():
             (ACTION_SUBMIT_URL_FILE, CliSubmitUrlFile(ApiSubmitFile(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_SUBMIT_URL, CliSubmitUrl(ApiSubmitUrl(config['api_key'], config['api_secret'], config['server']))),
         ])
+
 
         request_session = requests.Session()
 
@@ -171,9 +174,9 @@ def main():
         parser = argparse.ArgumentParser(description=program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
         parser.add_argument('--version', '-ver', action='version', version='{} - version {}'.format(program_name, program_version))
         CliArgumentBuilder(parser).add_help_argument()
-    
+
         subparsers = parser.add_subparsers(help='Action names for \'{}\' auth level'.format(used_api_key_data['auth_level_name']), dest="chosen_action")
-    
+
         for name, cli_object in map_of_available_actions.items():
             if cli_object.api_object.endpoint_auth_level <= used_api_key_data['auth_level']:
                 child_parser = subparsers.add_parser(name=name, help=cli_object.help_description, add_help=False)
@@ -192,7 +195,7 @@ def main():
 
                 if args['chosen_action'] != 'get_api_limits':
                     # API limits checking should be done here, to ensure that user always will be able to run command in help mode. Also there is no need to run it in non verbose mode.
-                    api_object_api_limits = ApiApiLimits(config['api_key'], config['api_secret'], config['server'])
+                    api_object_api_limits = ApiApiQueryLimits(config['api_key'], config['api_secret'], config['server'])
                     api_object_api_limits.call(request_session, vxapi_cli_headers)
                     api_limits_response_json = api_object_api_limits.get_response_json()
 
