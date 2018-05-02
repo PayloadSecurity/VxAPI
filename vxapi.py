@@ -124,6 +124,10 @@ def main():
 
         if config['server'].endswith('/'):
             config['server'] = config['server'][:-1]
+
+        if config['server'].endswith('vxstream-sandbox.com'):
+            config['server'] = config['server'].replace('vxstream-sandbox.com', 'falcon-sandbox.com')
+
         map_of_available_actions = OrderedDict([
             (ACTION_GET_API_LIMITS, CliApiLimitsSummary(ApiApiLimitsSummary(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_GET_API_QUERY_LIMITS, CliApiQueryLimits(ApiApiQueryLimits(config['api_key'], config['api_secret'], config['server']))),
