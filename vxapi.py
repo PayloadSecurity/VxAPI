@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-import traceback
 
 from sys import platform
 
@@ -35,6 +34,7 @@ except ImportError as exc:
 import argparse
 
 from constants import *
+from api_classes.api_caller import ApiCaller
 from api_classes.api_submit_url import ApiSubmitUrl
 from api_classes.api_submit_file import ApiSubmitFile
 from api_classes.api_api_submission_limits import ApiApiSubmissionLimits
@@ -95,6 +95,8 @@ from cli_classes.cli_sample_screenshots import CliSampleScreenshots
 from cli_classes.cli_api_query_limits import CliApiQueryLimits
 from cli_classes.cli_environments import CliEnvironments
 from cli_classes.cli_url_hash import CliUrlHash
+
+from helper_classes.cli_helper import CliHelper
 
 from exceptions import MissingConfigurationError
 from exceptions import RetrievingApiKeyDataError
@@ -160,7 +162,6 @@ def main():
             (ACTION_SUBMIT_URL, CliSubmitUrl(ApiSubmitUrl(config['api_key'], config['api_secret'], config['server']))),
         ])
 
-
         request_session = requests.Session()
 
         api_object_api_key_data = ApiApiKeyData(config['api_key'], config['api_secret'], config['server'])
@@ -189,79 +190,110 @@ def main():
         args = vars(parser.parse_args())
 
         if args['chosen_action'] is not None:
+            args_iterations = []
+            if_multiple_calls = True if args['chosen_action'] == ACTION_SUBMIT_FILE and len(args['file']) > 1 else False
+            if args['chosen_action'] == ACTION_SUBMIT_FILE:
+                for file in args['file']:
+                    arg_iter = args.copy()
+                    arg_iter['file'] = file
+                    args_iterations.append(arg_iter)
+            else:
+                args_iterations = [args]
+
             cli_object = map_of_available_actions[args['chosen_action']]
-            cli_object.attach_args(args)
+
             if args['verbose'] is True:
                 cli_object.init_verbose_mode()
                 print(Color.control('Running \'{}\' in version \'{}\''.format(program_name, program_version)))
-                cli_object.prompt_for_sharing_confirmation(config['server'])
-                cli_object.check_if_version_is_supported(ApiInstanceVersion(config['api_key'], config['api_secret'], config['server']), request_session,vxapi_cli_headers, MINIMAL_SUPPORTED_INSTANCE_VERSION)
 
-                if args['chosen_action'] != 'get_api_limits':
-                    # API limits checking should be done here, to ensure that user always will be able to run command in help mode. Also there is no need to run it in non verbose mode.
-                    api_object_api_limits = ApiApiQueryLimits(config['api_key'], config['api_secret'], config['server'])
-                    api_object_api_limits.call(request_session, vxapi_cli_headers)
-                    api_limits_response_json = api_object_api_limits.get_response_json()
+            CliHelper.prompt_for_dir_content_submission(args)
+            CliHelper.prompt_for_sharing_confirmation(args, config['server'])
+            CliHelper.check_if_version_is_supported(args, ApiInstanceVersion(config['api_key'], config['api_secret'], config['server']), request_session, vxapi_cli_headers, MINIMAL_SUPPORTED_INSTANCE_VERSION)
 
-                    # Ignore when WebService doesn't have that endpoint
-                    if api_object_api_limits.get_response_status_code() != 404:
-                        if api_object_api_limits.get_response_status_code() != 200 or api_limits_response_json['response_code'] == -1:
-                            raise RetrievingApiKeyDataError('Can\'t check API limits before calling requested endpoint in webservice: \'{}\'. Response status code: \'{}\''.format(config['server'], api_object_api_limits.get_response_status_code()))
+            for index, arg_iter in enumerate(args_iterations):
+                cli_object.attach_args(arg_iter)
+                if arg_iter['verbose'] is True:
+                    if arg_iter['chosen_action'] != ACTION_GET_API_LIMITS and (if_multiple_calls is False or index == 0):
+                        # API limits checking should be done here, to ensure that user always will be able to run command in help mode. Also there is no need to run it in non verbose mode.
+                        api_object_api_limits = ApiApiQueryLimits(config['api_key'], config['api_secret'], config['server'])
+                        api_object_api_limits.call(request_session, vxapi_cli_headers)
+                        api_limits_response_json = api_object_api_limits.get_response_json()
 
-                        if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0 and api_limits_response_json['response']['limit_reached'] is True:
-                            name_of_reached_limit = api_limits_response_json['response']['name_of_reached_limit']
-                            raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(name_of_reached_limit, api_limits_response_json['response']['used'][name_of_reached_limit]))
+                        # Ignore when WebService doesn't have that endpoint
+                        if api_object_api_limits.get_response_status_code() != 404:
+                            if api_object_api_limits.get_response_status_code() != 200 or api_limits_response_json['response_code'] == -1:
+                                raise RetrievingApiKeyDataError('Can\'t check API limits before calling requested endpoint in webservice: \'{}\'. Response status code: \'{}\''.format(config['server'], api_object_api_limits.get_response_status_code()))
 
-                    if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0 and api_limits_response_json['response']['used']:
-                        api_usage = OrderedDict()
-                        api_usage_limits = api_limits_response_json['response']['limits']
-                        is_api_limit_reached = False
+                            if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0 and api_limits_response_json['response']['limit_reached'] is True:
+                                name_of_reached_limit = api_limits_response_json['response']['name_of_reached_limit']
+                                raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(name_of_reached_limit, api_limits_response_json['response']['used'][name_of_reached_limit]))
 
-                        for period, used_limit in api_limits_response_json['response']['used'].items():
-                            # Given request is made after checking api limits. It means that we have to add 1 to current limits, to simulate that what happen after making requested API call
-                            api_usage[period] = used_limit + 1
-                            if is_api_limit_reached is False and api_usage[period] == api_usage_limits[period]:
-                                is_api_limit_reached = True
+                        if api_object_api_limits.get_response_status_code() == 200 and api_limits_response_json['response_code'] == 0 and api_limits_response_json['response']['used']:
+                            api_usage = OrderedDict()
+                            api_usage_limits = api_limits_response_json['response']['limits']
+                            is_api_limit_reached = False
 
-                        print(Color.control('API Limits for used API Key'))
-                        print('Webservice API usage limits: {}'.format(api_usage_limits))
-                        print('Current API usage: {}'.format(json.dumps(api_usage)))
-                        print('Is limit reached: {}'.format(Color.success('No') if is_api_limit_reached is False else Color.error('Yes')))
+                            for period, used_limit in api_limits_response_json['response']['used'].items():
+                                # Given request is made after checking api limits. It means that we have to add 1 to current limits, to simulate that what happen after making requested API call
+                                api_usage[period] = used_limit + 1
+                                if is_api_limit_reached is False and api_usage[period] == api_usage_limits[period]:
+                                    is_api_limit_reached = True
 
-                print(Color.control('Used API Key'))
-                print('API Key: {}'.format(used_api_key_data['api_key']))
-                print('Auth Level: {}'.format(used_api_key_data['auth_level_name']))
-                if used_api_key_data['user'] is not None:
-                    print('User: {} ({})'.format(used_api_key_data['user']['name'], used_api_key_data['user']['email']))
+                            print(Color.control('API Limits for used API Key'))
+                            print('Webservice API usage limits: {}'.format(api_usage_limits))
+                            print('Current API usage: {}'.format(json.dumps(api_usage)))
+                            print('Is limit reached: {}'.format(Color.success('No') if is_api_limit_reached is False else Color.error('Yes')))
 
-                print(Color.control('Request was sent at ' + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())))
-                print('Endpoint URL: {}'.format(cli_object.api_object.get_full_endpoint_url()))
-                print('HTTP Method: {}'.format(cli_object.api_object.request_method_name.upper()))
-                print('Sent GET params: {}'.format(cli_object.api_object.params))
-                print('Sent POST params: {}'.format(cli_object.api_object.data))
-                print('Sent files: {}'.format(cli_object.api_object.files))
-            else:
-                cli_object.prompt_for_sharing_confirmation(config['server'])
-                cli_object.check_if_version_is_supported(ApiInstanceVersion(config['api_key'], config['api_secret'], config['server']), request_session,vxapi_cli_headers, MINIMAL_SUPPORTED_INSTANCE_VERSION)
+                    if if_multiple_calls is False or index == 0:
+                        print(Color.control('Used API Key'))
+                        print('API Key: {}'.format(used_api_key_data['api_key']))
+                        print('Auth Level: {}'.format(used_api_key_data['auth_level_name']))
+                        if used_api_key_data['user'] is not None:
+                            print('User: {} ({})'.format(used_api_key_data['user']['name'], used_api_key_data['user']['email']))
 
-            cli_object.api_object.call(request_session, vxapi_cli_headers)
-            if args['verbose'] is True:
-                print(Color.control('Received response at ' + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())))
-                print('Response status code: {}'.format(cli_object.get_colored_response_status_code()))
-                print('Message: {}'.format(cli_object.get_colored_prepared_response_msg()))
-                print(Color.control('Showing response'))
+                    if arg_iter['chosen_action'] == ACTION_SUBMIT_FILE:
+                        if if_multiple_calls is True and index == 0:
+                            print(Color.control('Starting the process of sending multiple files ...'))
 
-            print(cli_object.get_result_msg())
-            cli_object.do_post_processing()
+                        cli_object.attach_file(arg_iter['file'])
 
-            if args['verbose'] is True:
-                print('\n')
+                    CliHelper.print_call_info(cli_object)
+                elif arg_iter['chosen_action'] == ACTION_SUBMIT_FILE:
+                    cli_object.attach_file(arg_iter['file'])
+
+                try:
+                    cli_object.api_object.call(request_session, vxapi_cli_headers)
+                except Exception as e:
+                    if if_multiple_calls is True:
+                        CliHelper.print_error_info(e)
+                    else:
+                        raise e
+
+                if arg_iter['verbose'] is True:
+                    print(Color.control('Received response at ' + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())))
+                    print('Response status code: {}'.format(cli_object.get_colored_response_status_code()))
+                    print('Message: {}'.format(cli_object.get_colored_prepared_response_msg()))
+                    show_response_msg = 'Showing response'
+                    if if_multiple_calls is True:
+                        show_response_msg = '{} for file \'{}\''.format(show_response_msg, arg_iter['file'].name)
+                    print(Color.control(show_response_msg))
+                elif if_multiple_calls:
+                    print(Color.control(arg_iter['file'].name))
+
+                print(cli_object.get_result_msg())
+
+                if cli_object.api_object.get_response_msg_success_nature() is False and if_multiple_calls is True and cli_object.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_JSON:
+                    response_json = cli_object.api_object.get_response_json()
+                    if 'response_code' in response_json and 'Exceeded maximum API requests' in response_json['response']['error']:
+                        raise Exception('Requests exceeded maximum API requests, the rest of the unsubmitted files won\'t be processed, exiting ...')
+                cli_object.do_post_processing()
+
+                if arg_iter['verbose'] is True:
+                    print('\n')
         else:
             print(Color.control('No option was selected. To check CLI options, run script in help mode: \'{} -h\''.format(__file__)))
-    except Exception as exc:
-        print(Color.control('During the code execution, error has occurred. Please try again or contact the support.'))
-        print(Color.error('Message: \'{}\'.').format(str(exc)) + '\n')
-        print(traceback.format_exc())
+    except Exception as e:
+        CliHelper.print_error_info(e)
 
 if __name__ == "__main__":
     main()

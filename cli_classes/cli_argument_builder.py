@@ -1,7 +1,9 @@
 import argparse
+import os
 from argparse import ArgumentParser
 from constants import ACTION_GET_ENVIRONMENTS
 from constants import ACTION_GET_NSSF_LIST
+from helper_classes.file_helper import FileHelper
 
 
 class CliArgumentBuilder:
@@ -56,7 +58,21 @@ class CliArgumentBuilder:
         self.parser.add_argument('query', type=str, help='Search query. Once you want to search by multiple terms, wrap it into quotes e.g. \'python3 vxapi.py search "filetype_tag:doc filename:invoice"\'')
 
     def add_submit_file_argument(self):
-        self.parser.add_argument('file', type=argparse.FileType('rb'), help='File to submit')
+        def validate_path(path):
+            files = [path]
+            files_as_handlers = []
+            if os.path.exists(path) is False:
+                raise argparse.ArgumentTypeError('No such file or directory: \'{}\''.format(path))
+
+            if os.path.isdir(path):
+                files = FileHelper.get_file_from_dir_recursively(path)
+
+            for file in files:
+                files_as_handlers.append(open(file, 'rb'))
+
+            return files_as_handlers
+
+        self.parser.add_argument('file', type=validate_path, help='File to submit (when directory given, all files from it will be submitted)')
 
     def add_submitted_document_password_argument(self):
         self.parser.add_argument('--document-password', '-dp', type=str, help='Password used for archive extraction', dest="documentPassword")

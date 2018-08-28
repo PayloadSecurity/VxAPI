@@ -47,6 +47,14 @@ class ApiCaller:
         self.server = server
         self.check_class_options()
 
+    def reset_state(self):
+        self.data = {}
+        self.params = {}
+        self.files = {}
+        self.response_msg_success_nature = False
+        self.api_response = None
+        self.api_response_json = {}
+
     def check_class_options(self):
         requested_fields = ['request_method_name', 'endpoint_url']
         for requested_field in requested_fields:

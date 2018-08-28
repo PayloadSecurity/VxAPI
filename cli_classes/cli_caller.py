@@ -35,6 +35,7 @@ class CliCaller:
         return parser_argument_builder
 
     def attach_args(self, args):
+        self.api_object.reset_state()
         self.given_args = args.copy()
         args_to_send = args.copy()
         for arg_to_remove in self.args_to_prevent_from_being_send:
@@ -48,8 +49,7 @@ class CliCaller:
         args_to_send = {k: v for k, v in args_to_send.items() if v not in [None, '']}  # Removing some 'empty' elements from dictionary
 
         if 'file' in args:
-            self.api_object.attach_files({'file': args['file']})  # it's already stored as file handler
-            del args_to_send['file']
+            del args_to_send['file']  # attaching file is handled by separated method
 
         for param in ['nosharevt', 'allowCommunityAccess']:
             if param in args:
@@ -59,6 +59,9 @@ class CliCaller:
             self.api_object.attach_params(args_to_send)
         else:  # POST
             self.api_object.attach_data(args_to_send)
+
+    def attach_file(self, file_handler):
+        self.api_object.attach_files({'file': file_handler})  # it's already stored as file handler
 
     def get_colored_response_status_code(self):
         response_code = self.api_object.get_response_status_code()
@@ -113,18 +116,6 @@ class CliCaller:
         if callable(file_saving_function) and self.api_object.get_response_status_code() == 200 and self.api_object.get_response_msg_success_nature() is True:
             self.create_output_dir()
             file_saving_function()
-
-    def prompt_for_sharing_confirmation(self, instance_url):
-        if 'nosharevt' in self.given_args:
-            if self.given_args['nosharevt'] == 'no' and self.given_args['quiet'] is False:
-                warning_msg = 'You are about to submit your file to all users of {} and the public.'.format(instance_url)
-                if 'hybrid-analysis.com' in instance_url:
-                    warning_msg += ' Please make sure you consent to the Terms and Conditions of Use and Data Privacy Policy available at: {} and {}.'.format('https://www.hybrid-analysis.com/terms', 'https://www.hybrid-analysis.com/data-protection-policy')
-                warning_msg += ' [y/n]'
-                submit_warning = input(warning_msg)
-                if not submit_warning or submit_warning[0].lower() != 'y':
-                    print('You did not indicate approval, exiting ...')
-                    exit(1)
 
     def check_if_version_is_supported(self, api_instance_version_object, request_handler, headers, minimal_compatible_version):
         if self.given_args['quiet'] is False and 'hybrid-analysis.com' not in api_instance_version_object.server:
