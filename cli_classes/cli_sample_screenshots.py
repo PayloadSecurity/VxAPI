@@ -1,4 +1,4 @@
-from cli_classes.cli_caller import CliCaller
+from cli.wrappers.cli_caller import CliCaller
 import base64
 
 
@@ -14,7 +14,7 @@ class CliSampleScreenshots(CliCaller):
         parser_argument_builder.add_cli_output_argument()
 
     def do_post_processing(self):
-        if self.api_object.get_response_status_code() == 200 and self.api_object.get_response_msg_success_nature() is True:
+        if self.api_object.if_request_success() is True:
             self.create_output_dir()
             self.save_files()
 

@@ -1,4 +1,4 @@
-from cli_classes.cli_caller import CliCaller
+from cli.wrappers.cli_caller import CliCaller
 
 
 class CliNssfList(CliCaller):
@@ -17,7 +17,7 @@ class CliNssfList(CliCaller):
 
     def get_result_msg(self):
         msg = super(CliNssfList, self).get_result_msg()  # just to throw exception if needed
-        if self.api_object.get_response_msg_success_nature() is False:
+        if self.api_object.if_request_success() is False:
             return msg
 
         response_json = self.api_object.get_response_json().get('response')

@@ -1,4 +1,4 @@
-from cli_classes.cli_caller import CliCaller
+from cli.wrappers.cli_caller import CliCaller
 
 import os
 import gzip
@@ -10,7 +10,7 @@ class CliNssfDownload(CliCaller):
 
     def add_parser_args(self, child_parser):
         parser_argument_builder = super(CliNssfDownload, self).add_parser_args(child_parser)
-        parser_argument_builder.add_file_with_hash_list()
+        parser_argument_builder.add_file_with_hash_list_arg()
         parser_argument_builder.add_cli_output_argument()
 
     def attach_args(self, args):

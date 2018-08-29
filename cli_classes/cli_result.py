@@ -1,4 +1,4 @@
-from cli_classes.cli_file_saver import CliFileSaver
+from cli.wrappers.cli_file_saver import CliFileSaver
 
 
 class CliResult(CliFileSaver):

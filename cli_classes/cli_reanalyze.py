@@ -1,4 +1,4 @@
-from cli_classes.cli_caller import CliCaller
+from cli.wrappers.cli_caller import CliCaller
 
 
 # hash, 'environmentId', 'nosharevt', 'nohashlookup', 'kernelmode'
