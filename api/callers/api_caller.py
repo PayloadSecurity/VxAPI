@@ -142,6 +142,12 @@ class ApiCaller:
 
         return self.api_response_json
 
+    def get_headers(self):
+        if self.api_response is None:
+            raise ResponseObjectNotExistError('It\'s not possible to get response headers since API was not called.')
+
+        return self.api_response.headers
+
     def build_url(self, params):
         if ':' in self.endpoint_url:
             url_data = params
