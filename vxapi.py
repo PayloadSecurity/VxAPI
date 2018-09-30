@@ -63,12 +63,12 @@ from _version import __version__
 
 from copy import copy, deepcopy
 
-os.environ['APP_ENV'] = 'test'
-os.environ['TEST_CONFIG'] = json.dumps({
-        'api_key': 'test_me_please',
-        'server': 'mock://my-webservice-instance'
-})
-os.environ['TEST_SCENARIO'] = '1'
+# os.environ['APP_ENV'] = 'test'
+# os.environ['TEST_CONFIG'] = json.dumps({
+#         'api_key': 'test_me_please',
+#         'server': 'mock://my-webservice-instance'
+# })
+# os.environ['TEST_SCENARIO'] = '1'
 
 
 is_test_env = True if 'APP_ENV' in os.environ and os.environ['APP_ENV'] == 'test' else False
@@ -252,15 +252,15 @@ class CliManager:
                 iter_cli_object = deepcopy(cli_object)
                 iter_cli_object.attach_args(arg_iter)
 
-                if api_limits['limit_reached'] is True:
+                if api_limits and api_limits['limit_reached'] is True:
                     raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(api_limits['name_of_reached_limit'], api_limits['used'][api_limits['name_of_reached_limit']]))
 
                 if arg_iter['verbose'] is True:
-                    if arg_iter['chosen_action'] != ACTION_GET_API_LIMITS and (if_multiple_calls is False or index == 0) and api_limits['used']:
-                        CliMsgPrinter.print_usage_info(*self.prepare_api_usage_data(api_limits))
+                    if arg_iter['chosen_action'] != ACTION_GET_API_LIMITS and (if_multiple_calls is False or index == 0) and 'used' in api_limits:
+                        CliMsgPrinter.print_usage_info(**self.prepare_api_usage_data(api_limits))
 
                     if if_multiple_calls is False or index == 0:
-                        CliMsgPrinter.print_api_key_info(self.prepare_api_usage_data(api_limits))
+                        CliMsgPrinter.print_api_key_info(current_key_json)
 
                     if arg_iter['chosen_action'] == ACTION_SUBMIT_FILE:
                         if if_multiple_calls is True and index == 0:

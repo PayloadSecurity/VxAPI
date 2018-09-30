@@ -33,7 +33,7 @@ class CliMsgPrinter:
         print(Color.control('Used API Key'))
         print('API Key: {}'.format(current_key_json['api_key']))
         print('Auth Level: {}'.format(current_key_json['auth_level_name']))
-        if current_key_json['user'] is not None:
+        if 'user' in current_key_json and current_key_json['user'] is not None:
             print('User: {} ({})'.format(current_key_json['user']['name'], current_key_json['user']['email']))
 
 
