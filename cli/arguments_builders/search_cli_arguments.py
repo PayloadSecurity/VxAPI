@@ -22,13 +22,19 @@ class SearchCliArguments(DefaultCliArguments):
         self.parser.add_argument('--verdict', type=str, help='Verdict', choices={1: 'whitelisted', 2: 'no verdict', 3: 'no specific threat', 4: 'suspicious', 5: 'malicious'})
 
     def add_search_term_av_detect_opt(self):
-        self.parser.add_argument('--av-detect', type=str, help='AV Multiscan range e.g. 50-70 (min 0, max 100)')
+        self.parser.add_argument('--av-detect', type=str, help='AV Multiscan range e.g. 50-70 (min 0, max 100)') # TODO - add some validator here
 
     def add_search_term_vx_family_opt(self):
         self.parser.add_argument('--vx-family', type=str, help='AV Family Substring e.g. nemucod')
 
     def add_search_term_tag_opt(self):
         self.parser.add_argument('--tag', type=str, help='Hashtag e.g. ransomware')
+
+    def add_search_term_date_from_opt(self):
+        self.parser.add_argument('--date-to', type=str, help='Date from in format: ‘Y-m-d H:i’ e.g. 2018-09-28 15:30') # TODO - add some date validator here
+
+    def add_search_term_date_to_opt(self):
+        self.parser.add_argument('--date-from', type=str, help='Date to in format: ‘Y-m-d H:i’ e.g. 2018-09-28 15:30')
 
     def add_search_term_port_opt(self):
         self.parser.add_argument('--port', type=str, help='Port e.g. 8080')

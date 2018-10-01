@@ -107,7 +107,7 @@ class CliManager:
     def prepare_test_env(self):
         if is_test_env is True:
             adapter = requests_mock.Adapter()
-            with open('tests/requests_scenarios/{}.json'.format(os.environ['TEST_SCENARIO']), 'r') as f:
+            with open('tests/_requests_scenarios/{}.json'.format(os.environ['TEST_SCENARIO']), 'r') as f:
                 scenario_data = json.load(f)
 
             for scenario in scenario_data:
@@ -172,7 +172,7 @@ class CliManager:
         api_key_data_json_response = api_object_key_current.get_response_json()
 
         if api_object_key_current.get_response_status_code() != 200 or bool(api_key_data_json_response) is False:
-            base_error_message = 'Can\'t retrieve data for given API Key \'{}\' in the webservice: \'{}\'. Response status code: \'{}\''.format(config['api_key'], config['server'], api_object_key_current.get_response_status_code())
+            base_error_message = 'Can\'t retrieve _data for given API Key \'{}\' in the webservice: \'{}\'. Response status code: \'{}\''.format(config['api_key'], config['server'], api_object_key_current.get_response_status_code())
             if 'message' in api_key_data_json_response:
                 base_error_message += '. Response message: \'{}\''.format(api_key_data_json_response['message'])
 

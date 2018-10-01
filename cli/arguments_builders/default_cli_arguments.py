@@ -51,8 +51,7 @@ class DefaultCliArguments:
         self.parser.add_argument('--comment', '-c', type=str, help='Add comment (e.g. #hashtag) to sample')
 
     def add_file_with_hash_list_arg(self, allowed_hashes):
-
-        self.parser.add_argument('hashes-file', type=argparse.FileType('r'), help='Path to file containing list of sample hashes (allowed: {})'.format(', '.join(allowed_hashes)))
+        self.parser.add_argument('hashes-file', type=argparse.FileType('r'), help='Path to file containing list of sample hashes separated by new line (allowed: {})'.format(', '.join(allowed_hashes)))
 
     def add_file_with_ids_arg(self, allowed_ids):
         self.parser.add_argument('mixed-ids-file', type=argparse.FileType('r'), help='Path to file containing list of ids (allowed: {}'.format(', '.join(allowed_ids)))

@@ -1,0 +1,49 @@
+# content of test_pyconv.py
+
+import pytest
+import subprocess
+import os
+
+from base_test import BaseTest
+
+# we reuse a bit of pytest's own testing machinery, this should eventually come
+# from a separatedly installable pytest-cli plugin.
+pytest_plugins = ["pytester"]
+
+
+class TestSearchHashes(BaseTest):
+
+    expected_response = [{"doc": "first"}, {"doc": "second"}]
+
+    def get_action_name(self):
+        return 'search_hashes'
+
+    def init_request_scenario(self):
+        os.environ['TEST_SCENARIO'] = 'search/search_hashes'
+
+    def test_base_query(self, run_command):
+        self.init_request_scenario()
+
+        run_command(self.get_action_name(), 'tests/_data/hashes')
+        self.see_response(self.expected_response)
+
+    def test_base_query_with_not_existing_file(self, run_command):
+        self.init_request_scenario()
+        run_command(self.get_action_name(), 'not_existing_file')
+        self.see_missing_file_command_state()
+
+    def test_verbose_query(self, run_command):
+        self.init_request_scenario()
+
+        run_command(self.get_action_name(), 'tests/_data/hashes', '-v')
+        self.see_headers()
+        self.see_response(self.expected_response)
+
+    def test_verbose_query_with_not_existing_file(self, run_command):
+        self.init_request_scenario()
+        run_command(self.get_action_name(), 'not_existing_file', '-v')
+        self.see_missing_file_command_state()
+
+    def see_missing_file_command_state(self):
+        assert self.code != 0
+        assert 'No such file or directory:' in self.output

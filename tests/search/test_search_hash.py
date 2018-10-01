@@ -1,6 +1,5 @@
 # content of test_pyconv.py
 
-import pytest
 import subprocess
 import os
 
@@ -19,17 +18,17 @@ class TestSearchHash(BaseTest):
         return 'search_hash'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'search_hash'
+        os.environ['TEST_SCENARIO'] = 'search/search_hash'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()
 
-        code, output = run_command(self.get_action_name(), 'test')
-        self.see_response(self.expected_response, output)
+        run_command(self.get_action_name(), 'test')
+        self.see_response(self.expected_response)
 
     def test_verbose_query(self, run_command):
         self.init_request_scenario()
 
-        code, output = run_command(self.get_action_name(), 'test', '-v')
-        self.see_headers(output)
-        self.see_response(self.expected_response, output)
+        run_command(self.get_action_name(), 'test', '-v')
+        self.see_headers()
+        self.see_response(self.expected_response)
