@@ -42,3 +42,7 @@ class BaseTest(object):
 
     def see_sent_params(self, method, params):
         assert 'Sent {} params: {}'.format(method, params) in self.output
+
+    def see_missing_file_command_state(self):
+        assert self.code != 0
+        assert 'No such file or directory:' in self.output
