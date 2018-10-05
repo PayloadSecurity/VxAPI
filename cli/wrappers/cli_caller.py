@@ -7,11 +7,13 @@ import os
 import json
 from cli.arguments_builders.default_cli_arguments import DefaultCliArguments
 import datetime
+from cli.cli_file_writer import CliFileWriter
 
 
 class CliCaller:
 
     api_object = None
+    action_name = None
     help_description = ''
     given_args = {}
     result_msg_for_files = 'Response contains files. They were saved in the output folder ({}).'
@@ -19,8 +21,9 @@ class CliCaller:
     cli_output_folder = ''
     args_to_prevent_from_being_send = ['chosen_action', 'verbose', 'quiet']
 
-    def __init__(self, api_object: ApiCaller):
+    def __init__(self, api_object: ApiCaller, action_name: str):
         self.api_object = api_object
+        self.action_name = action_name
         self.help_description = self.help_description.format(self.api_object.endpoint_url)
 
     def init_verbose_mode(self):
@@ -44,9 +47,9 @@ class CliCaller:
             if arg_to_remove in args_to_send:
                 del args_to_send[arg_to_remove]
 
-        if 'cli_output' in args:
-            self.cli_output_folder = args['cli_output']
-            del args_to_send['cli_output']
+        if 'output' in args:
+            self.cli_output_folder = args['output']
+            del args_to_send['output']
 
         args_to_send = {k: v for k, v in args_to_send.items() if v not in [None, '']}  # Removing some 'empty' elements from dictionary
 
@@ -68,7 +71,7 @@ class CliCaller:
     def get_colored_response_status_code(self):
         response_code = self.api_object.get_response_status_code()
 
-        return Color.success(response_code) if response_code == 200 else Color.error(response_code)
+        return Color.success(response_code) if self.api_object.if_request_success() is True else Color.error(response_code)
 
     def get_colored_prepared_response_msg(self):
         response_msg = self.api_object.get_prepared_response_msg()
@@ -96,7 +99,7 @@ class CliCaller:
         if output_path.startswith('/') is True:  # Given path is absolute
             final_output_path = output_path
         else:
-            prepared_file_path = os.path.dirname(os.path.realpath(__file__)).split('/')[:-1] + [self.cli_output_folder]
+            prepared_file_path = os.path.dirname(os.path.realpath(__file__)).split('/')[:-2] + [self.cli_output_folder]
             final_output_path = '/'.join(prepared_file_path)
 
         return final_output_path
@@ -105,29 +108,8 @@ class CliCaller:
         return self.result_msg_for_files.format(self.get_processed_output_path())
 
     def do_post_processing(self):
-        '''
-        When saving file function is there and expected data type is different than file, let's call it.
-        When we're expecting file in response, saving file function is obligatory
-        '''
-        file_saving_function = getattr(self, 'save_files', None)
-
-        if self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_FILE and not callable(file_saving_function):
-            raise FilesSavingMethodNotDeclaredError('Can\'t do post processing, since method \'save_files\' is not declared in {} class.'.format(self.__class__.__name__))
-
-        if callable(file_saving_function) and self.api_object.get_response_status_code() == 200 and self.api_object.if_request_success() is True:
-            self.create_output_dir()
-            file_saving_function()
-
-    def create_output_dir(self):
-        try:
-            os.makedirs(self.cli_output_folder)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(self.cli_output_folder):
-                pass
-            elif exc.errno == errno.EACCES:
-                raise Exception('Failed to create directory in \'{}\'. Possibly it\'s connected with file rights.'.format(self.get_processed_output_path()))
-            else:
-                raise
+        if self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_FILE and self.api_object.if_request_success() is True:
+            self.save_files()
 
     def get_date_string(self):
         now = datetime.datetime.now()
@@ -146,3 +128,13 @@ class CliCaller:
         del args[file_arg]
 
         return args
+
+    def save_files(self):
+        api_response = self.api_object.api_response
+        identifier = None
+        if 'sha256' in self.given_args:
+            identifier = self.given_args['sha256']
+
+        filename = '{}-{}-{}'.format(self.action_name, identifier, api_response.headers['Vx-Filename']) if identifier is not None else '{}-{}'.format(self.action_name, api_response.headers['Vx-Filename'])
+
+        return CliFileWriter.write(self.cli_output_folder, filename, api_response.content)

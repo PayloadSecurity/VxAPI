@@ -19,7 +19,7 @@ class TestSearchTerms(BaseTest):
         return 'search_terms'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'search/search_terms'
+        os.environ['TEST_SCENARIO'] = 'search.search_terms'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

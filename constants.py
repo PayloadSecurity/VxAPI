@@ -33,5 +33,10 @@ ACTION_SEARCH_HASHES = 'search_hashes'
 ACTION_SEARCH_STATES = 'search_states'
 ACTION_SEARCH_TERMS = 'search_terms'
 
+ACTION_GET_OVERVIEW = 'overview_get'
+ACTION_GET_REFRESHED_OVERVIEW = 'overview_get_refreshed'
+ACTION_GET_OVERVIEW_SUMMARY = 'overview_get_summary'
+ACTION_GET_OVERVIEW_SAMPLE = 'overview_download_sample'
+
 
 MINIMAL_SUPPORTED_INSTANCE_VERSION = '8.10'

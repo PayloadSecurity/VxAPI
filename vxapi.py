@@ -53,6 +53,9 @@ from cli.wrappers.search import *
 from api.callers.key import *
 from cli.wrappers.key import *
 
+from api.callers.overview import *
+from cli.wrappers.overview import *
+
 from cli.arguments_builders import *
 
 from cli.cli_helper import CliHelper
@@ -107,10 +110,10 @@ class CliManager:
     def prepare_test_env(self):
         if is_test_env is True:
             adapter = requests_mock.Adapter()
-            with open('tests/_requests_scenarios/{}.json'.format(os.environ['TEST_SCENARIO']), 'r') as f:
-                scenario_data = json.load(f)
 
-            for scenario in scenario_data:
+            imported_scenarios = __import__('tests._requests_scenarios.{}'.format(os.environ['TEST_SCENARIO']), fromlist=[None])
+
+            for scenario in imported_scenarios.scenarios:
                 scenario['url'] = '{}/api/v2{}'.format(self.config['server'], scenario['url'])
                 if 'headers' in scenario:
                     if 'api-limits' in scenario['headers']:
@@ -151,10 +154,14 @@ class CliManager:
             # (ACTION_GET_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_GET_URL_HASH, CliUrlHash(ApiUrlHash(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_REANALYZE_SAMPLE, CliReanalyze(ApiReanalyze(config['api_key'], config['api_secret'], config['server']))),
-            (ACTION_SEARCH_HASH, CliSearchHash(ApiSearchHash(config['api_key'], config['server']))),
-            (ACTION_SEARCH_HASHES, CliSearchHashes(ApiSearchHashes(config['api_key'], config['server']))),
-            (ACTION_SEARCH_STATES, CliSearchStates(ApiSearchStates(config['api_key'], config['server']))),
-            (ACTION_SEARCH_TERMS, CliSearchTerms(ApiSearchTerms(config['api_key'], config['server']))),
+            (ACTION_SEARCH_HASH, CliSearchHash(ApiSearchHash(config['api_key'], config['server']), ACTION_SEARCH_HASH)),
+            (ACTION_SEARCH_HASHES, CliSearchHashes(ApiSearchHashes(config['api_key'], config['server']), ACTION_SEARCH_HASHES)),
+            (ACTION_SEARCH_STATES, CliSearchStates(ApiSearchStates(config['api_key'], config['server']), ACTION_SEARCH_STATES)),
+            (ACTION_SEARCH_TERMS, CliSearchTerms(ApiSearchTerms(config['api_key'], config['server']), ACTION_SEARCH_TERMS)),
+            (ACTION_GET_OVERVIEW, CliOverview(ApiOverview(config['api_key'], config['server']), ACTION_GET_OVERVIEW)),
+            (ACTION_GET_REFRESHED_OVERVIEW, CliOverviewRefresh(ApiOverviewRefresh(config['api_key'], config['server']), ACTION_GET_REFRESHED_OVERVIEW)),
+            (ACTION_GET_OVERVIEW_SUMMARY, CliOverviewSummary(ApiOverviewSummary(config['api_key'], config['server']), ACTION_GET_OVERVIEW_SUMMARY)),
+            (ACTION_GET_OVERVIEW_SAMPLE, CliOverviewSample(ApiOverviewSample(config['api_key'], config['server']), ACTION_GET_OVERVIEW_SAMPLE)),
             # (ACTION_SEARCH_HASHES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_SEARCH_STATES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_SEARCH_TERMS, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
@@ -291,7 +298,7 @@ class CliManager:
                     response_json = iter_cli_object.api_object.get_response_json()
                     if 'response_code' in response_json and 'Exceeded maximum API requests' in response_json['response']['error']:
                         raise Exception('Requests exceeded maximum API requests, the rest of the unsubmitted files won\'t be processed, exiting ...')
-                    iter_cli_object.do_post_processing()
+                iter_cli_object.do_post_processing()
 
                 if arg_iter['verbose'] is True:
                     print('\n')

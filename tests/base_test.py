@@ -2,6 +2,7 @@ import json
 import abc
 import subprocess
 import pytest
+import os
 
 class BaseTest(object):
 
@@ -43,6 +44,19 @@ class BaseTest(object):
     def see_sent_params(self, method, params):
         assert 'Sent {} params: {}'.format(method, params) in self.output
 
+    def see_reached_url(self, url_part):
+        assert 'Endpoint URL: mock://my-webservice-instance/api/v2/{}'.format(url_part) in self.output
+
     def see_missing_file_command_state(self):
         assert self.code != 0
         assert 'No such file or directory:' in self.output
+
+    def see_file_response(self, path, content, mode='r'):
+        prepared_file_path = os.path.dirname(os.path.realpath(__file__)).split('/')[:-1] + [path]
+        final_output_path = '/'.join(prepared_file_path)
+
+        assert 'Response contains files. They were saved in the output folder'.format(os.path.dirname(final_output_path)) in self.output
+
+        file_handler = open(final_output_path, mode)
+        assert file_handler.read() == content
+

@@ -19,7 +19,7 @@ class TestSearchHashes(BaseTest):
         return 'search_hashes'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'search/search_hashes'
+        os.environ['TEST_SCENARIO'] = 'search.search_hashes'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

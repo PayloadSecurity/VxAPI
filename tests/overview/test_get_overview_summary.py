@@ -10,15 +10,15 @@ from base_test import BaseTest
 pytest_plugins = ["pytester"]
 
 
-class TestSearchHash(BaseTest):
+class TestGetOverviewSummary(BaseTest):
 
     expected_response = {'pies': 'to'}
 
     def get_action_name(self):
-        return 'search_hash'
+        return 'overview_get_summary'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'search.search_hash'
+        os.environ['TEST_SCENARIO'] = 'overview.get_overview_summary'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()
