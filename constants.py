@@ -37,5 +37,8 @@ ACTION_SYSTEM_IN_PROGRESS = 'system_get_in_progress_stats'
 ACTION_SYSTEM_TOTAL_SUBMISSION = 'system_get_total_submissions_stats'
 ACTION_SYSTEM_HEARTBEAT = 'system_get_heartbeat'
 
+ACTION_KEY_CURRENT = 'key_get_current'
+ACTION_KEY_CREATE = 'key_create'
+
 
 MINIMAL_SUPPORTED_INSTANCE_VERSION = '8.20'

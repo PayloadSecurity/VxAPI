@@ -171,12 +171,17 @@ class CliManager:
             (ACTION_SYSTEM_STATE, CliSystemState(ApiSystemState(config['api_key'], config['server']), ACTION_SYSTEM_STATE)),
             (ACTION_SYSTEM_STATS, CliSystemStats(ApiSystemStats(config['api_key'], config['server']), ACTION_SYSTEM_STATS)),
             (ACTION_SYSTEM_VERSION, CliSystemVersion(ApiSystemVersion(config['api_key'], config['server']), ACTION_SYSTEM_VERSION)),
+
+            (ACTION_KEY_CREATE, CliKeyCreate(ApiKeyCreate(config['api_key'], config['server']), ACTION_KEY_CREATE)),
+            (ACTION_KEY_CURRENT, CliKeyCurrent(ApiKeyCurrent(config['api_key'], config['server']), ACTION_KEY_CURRENT)),
         ])
 
     def check_current_key(self):
         config = self.config
         
-        api_object_key_current = ApiKeyCurrent(config['api_key'], config['server'])
+        cli_object_key_current = CliKeyCurrent(ApiKeyCurrent(config['api_key'], config['server']), ACTION_KEY_CREATE)
+        api_object_key_current = cli_object_key_current.api_object
+
         api_object_key_current.call(self.request_session, self.vxapi_cli_headers)
         api_key_data_json_response = api_object_key_current.get_response_json()
 
@@ -187,7 +192,7 @@ class CliManager:
 
             raise RetrievingApiKeyDataError(base_error_message)
         
-        return api_object_key_current
+        return cli_object_key_current
     
     def prepare_parser(self, current_key_json, map_of_available_actions):
         parser = argparse.ArgumentParser(description=Color.control_without_arrows('{} [{}]'.format(self.program_name, self.program_version)), formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
@@ -241,9 +246,9 @@ class CliManager:
         self.prepare_test_env()
         
         map_of_available_actions = self.get_map_of_available_actions()
-        current_key_api_object = self.check_current_key()
-        current_key_json = current_key_api_object.get_response_json()
-        current_key_response_headers = current_key_api_object.get_headers()
+        current_key_cli_object = self.check_current_key()
+        current_key_json = current_key_cli_object.api_object.get_response_json()
+        current_key_response_headers = current_key_cli_object.api_object.get_headers()
         
         parser = self.prepare_parser(current_key_json, map_of_available_actions)
         args = self.rebuild_args(vars(parser.parse_args()))
@@ -272,7 +277,7 @@ class CliManager:
                     raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(api_limits['name_of_reached_limit'], api_limits['used'][api_limits['name_of_reached_limit']]))
 
                 if arg_iter['verbose'] is True:
-                    # if arg_iter['chosen_action'] != ACTION_GET_API_LIMITS and (if_multiple_calls is False or index == 0) and 'used' in api_limits:
+                    # if arg_iter['chosen_action'] != ACTION_KEY_CURRENT and (if_multiple_calls is False or index == 0) and 'used' in api_limits:
                     if (if_multiple_calls is False or index == 0) and 'used' in api_limits:
                         CliMsgPrinter.print_usage_info(**self.prepare_api_usage_data(api_limits))
 
@@ -289,13 +294,16 @@ class CliManager:
                 elif arg_iter['chosen_action'] == ACTION_SUBMIT_FILE:
                     iter_cli_object.attach_file(arg_iter['file'])
 
-                try:
-                    iter_cli_object.api_object.call(self.request_session, self.vxapi_cli_headers)
-                except Exception as e:
-                    if if_multiple_calls is True:
-                        CliMsgPrinter.print_error_info(e)
-                    else:
-                        raise e
+                if arg_iter['chosen_action'] != ACTION_KEY_CURRENT:
+                    try:
+                        iter_cli_object.api_object.call(self.request_session, self.vxapi_cli_headers)
+                    except Exception as e:
+                        if if_multiple_calls is True:
+                            CliMsgPrinter.print_error_info(e)
+                        else:
+                            raise e
+                else:
+                    iter_cli_object = current_key_cli_object
 
                 if arg_iter['verbose'] is True:
                     CliMsgPrinter.print_response_summary(arg_iter, iter_cli_object, if_multiple_calls)
