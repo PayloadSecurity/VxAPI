@@ -62,6 +62,9 @@ from cli.wrappers.submit import *
 from api.callers.report import *
 from cli.wrappers.report import *
 
+from api.callers.system import *
+from cli.wrappers.system import *
+
 from cli.arguments_builders import *
 
 from cli.cli_helper import CliHelper
@@ -89,8 +92,8 @@ if is_test_env is True:
 class CliManager:
 
     config = None
-    program_name = 'VxWebService Python API Connector'
     program_version = __version__
+    program_name = 'VxWebService Python API Connector'
     vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
     request_session = None
 
@@ -136,30 +139,6 @@ class CliManager:
         config = self.config
 
         return OrderedDict([
-            # (ACTION_GET_API_LIMITS, CliApiLimitsSummary(ApiApiLimitsSummary(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_API_QUERY_LIMITS, CliApiQueryLimits(ApiApiQueryLimits(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_API_SUBMISSION_LIMITS, CliApiSubmissionLimits(ApiApiSubmissionLimits(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_ENVIRONMENTS, CliEnvironments(ApiEnvironments(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_FEED, CliFeed(ApiFeed(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_NSSF_FILES, CliNssfDownload(ApiNssfDownload(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_NSSF_LIST, CliNssfList(ApiNssfList(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_RELATIONSHIPS, CliRelationships(ApiRelationships(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_RESULT, CliResult(ApiResult(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SAMPLE_DROPPED_FILES, CliSampleDroppedFiles(ApiSampleDroppedFiles(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SAMPLE_SCREENSHOTS, CliSampleScreenshots(ApiSampleScreenshots(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SCAN, CliScan(ApiScan(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_BULK_SCAN, CliBulkScan(ApiBulkScan(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_STATE, CliState(ApiState(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SUMMARY, CliSummary(ApiSummary(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_BULK_SUMMARY, CliBulkSummary(ApiBulkSummary(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SYSTEM_BACKEND, CliSystemBackend(ApiSystemBackend(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SYSTEM_IN_PROGRESS, CliSystemInProgress(ApiSystemInProgress(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SYSTEM_HEARTBEAT, CliSystemHeartbeat(ApiSystemHeartbeat(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SYSTEM_STATE, CliSystemState(ApiSystemState(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SYSTEM_STATS, CliSystemStats(ApiSystemStats(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_GET_URL_HASH, CliUrlHash(ApiUrlHash(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_REANALYZE_SAMPLE, CliReanalyze(ApiReanalyze(config['api_key'], config['api_secret'], config['server']))),
             (ACTION_SEARCH_HASH, CliSearchHash(ApiSearchHash(config['api_key'], config['server']), ACTION_SEARCH_HASH)),
             (ACTION_SEARCH_HASHES, CliSearchHashes(ApiSearchHashes(config['api_key'], config['server']), ACTION_SEARCH_HASHES)),
             (ACTION_SEARCH_STATES, CliSearchStates(ApiSearchStates(config['api_key'], config['server']), ACTION_SEARCH_STATES)),
@@ -183,13 +162,15 @@ class CliManager:
             (ACTION_REPORT_GET_FILE, CliReportFile(ApiReportFile(config['api_key'], config['server']), ACTION_REPORT_GET_FILE)),
             (ACTION_REPORT_GET_SCREENSHOTS, CliReportScreenshots(ApiReportScreenshots(config['api_key'], config['server']), ACTION_REPORT_GET_SCREENSHOTS)),
             (ACTION_REPORT_GET_STATE, CliReportState(ApiReportState(config['api_key'], config['server']), ACTION_REPORT_GET_STATE)),
-            # (ACTION_SEARCH_HASHES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_SEARCH_STATES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_SEARCH_TERMS, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_SUBMIT_DROPPED_FILE, CliDroppedFileSubmit(ApiDroppedFileSubmit(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_SUBMIT_FILE, CliSubmitFile(ApiSubmitFile(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_SUBMIT_URL_FILE, CliSubmitUrlFile(ApiSubmitFile(config['api_key'], config['api_secret'], config['server']))),
-            # (ACTION_SUBMIT_URL, CliSubmitUrl(ApiSubmitUrl(config['api_key'], config['api_secret'], config['server']))),
+            (ACTION_SYSTEM_BACKEND, CliSystemBackend(ApiSystemBackend(config['api_key'], config['server']), ACTION_SYSTEM_BACKEND)),
+            (ACTION_SYSTEM_ENVIRONMENTS, CliSystemEnvironments(ApiSystemEnvironments(config['api_key'], config['server']), ACTION_SYSTEM_ENVIRONMENTS)),
+            (ACTION_SYSTEM_HEARTBEAT, CliSystemHeartbeat(ApiSystemHeartbeat(config['api_key'], config['server']), ACTION_SYSTEM_HEARTBEAT)),
+            (ACTION_SYSTEM_IN_PROGRESS, CliSystemInProgress(ApiSystemInProgress(config['api_key'], config['server']), ACTION_SYSTEM_IN_PROGRESS)),
+            (ACTION_SYSTEM_PHP, CliSystemPhp(ApiSystemPhp(config['api_key'], config['server']), ACTION_SYSTEM_PHP)),
+            (ACTION_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['server']), ACTION_SYSTEM_QUEUE_SIZE)),
+            (ACTION_SYSTEM_STATE, CliSystemState(ApiSystemState(config['api_key'], config['server']), ACTION_SYSTEM_STATE)),
+            (ACTION_SYSTEM_STATS, CliSystemStats(ApiSystemStats(config['api_key'], config['server']), ACTION_SYSTEM_STATS)),
+            (ACTION_SYSTEM_VERSION, CliSystemVersion(ApiSystemVersion(config['api_key'], config['server']), ACTION_SYSTEM_VERSION)),
         ])
 
     def check_current_key(self):
@@ -209,7 +190,7 @@ class CliManager:
         return api_object_key_current
     
     def prepare_parser(self, current_key_json, map_of_available_actions):
-        parser = argparse.ArgumentParser(description=self.program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
+        parser = argparse.ArgumentParser(description=Color.control_without_arrows('{} [{}]'.format(self.program_name, self.program_version)), formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
         parser.add_argument('--version', '-ver', action='version', version='{} - version {}'.format(self.program_name, self.program_version))
         DefaultCliArguments(parser).add_help_argument()
 
@@ -291,7 +272,8 @@ class CliManager:
                     raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(api_limits['name_of_reached_limit'], api_limits['used'][api_limits['name_of_reached_limit']]))
 
                 if arg_iter['verbose'] is True:
-                    if arg_iter['chosen_action'] != ACTION_GET_API_LIMITS and (if_multiple_calls is False or index == 0) and 'used' in api_limits:
+                    # if arg_iter['chosen_action'] != ACTION_GET_API_LIMITS and (if_multiple_calls is False or index == 0) and 'used' in api_limits:
+                    if (if_multiple_calls is False or index == 0) and 'used' in api_limits:
                         CliMsgPrinter.print_usage_info(**self.prepare_api_usage_data(api_limits))
 
                     if if_multiple_calls is False or index == 0:
