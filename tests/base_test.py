@@ -44,6 +44,9 @@ class BaseTest(object):
     def see_sent_params(self, method, params):
         assert 'Sent {} params: {}'.format(method, params) in self.output
 
+    def see_sent_files(self, filename):
+        assert 'Sent files: {\'file\': <_io.BufferedReader name=\'' + filename + '\'>}' in self.output
+
     def see_reached_url(self, url_part):
         assert 'Endpoint URL: mock://my-webservice-instance/api/v2/{}'.format(url_part) in self.output
 

@@ -56,6 +56,9 @@ from cli.wrappers.key import *
 from api.callers.overview import *
 from cli.wrappers.overview import *
 
+from api.callers.submit import *
+from cli.wrappers.submit import *
+
 from cli.arguments_builders import *
 
 from cli.cli_helper import CliHelper
@@ -162,6 +165,12 @@ class CliManager:
             (ACTION_GET_REFRESHED_OVERVIEW, CliOverviewRefresh(ApiOverviewRefresh(config['api_key'], config['server']), ACTION_GET_REFRESHED_OVERVIEW)),
             (ACTION_GET_OVERVIEW_SUMMARY, CliOverviewSummary(ApiOverviewSummary(config['api_key'], config['server']), ACTION_GET_OVERVIEW_SUMMARY)),
             (ACTION_GET_OVERVIEW_SAMPLE, CliOverviewSample(ApiOverviewSample(config['api_key'], config['server']), ACTION_GET_OVERVIEW_SAMPLE)),
+            (ACTION_SUBMIT_DROPPED_FILE, CliSubmitDroppedFile(ApiSubmitDroppedFile(config['api_key'], config['server']), ACTION_SUBMIT_DROPPED_FILE)),
+            (ACTION_SUBMIT_FILE, CliSubmitFile(ApiSubmitFile(config['api_key'], config['server']), ACTION_SUBMIT_FILE)),
+            (ACTION_SUBMIT_HASH_FOR_URL, CliSubmitHashForUrl(ApiSubmitHashForUrl(config['api_key'], config['server']), ACTION_SUBMIT_HASH_FOR_URL)),
+            (ACTION_SUBMIT_REANALYZE, CliSubmitReanalyze(ApiSubmitReanalyze(config['api_key'], config['server']), ACTION_SUBMIT_REANALYZE)),
+            (ACTION_SUBMIT_URL_FOR_ANALYSIS, CliSubmitUrlForAnalysis(ApiSubmitUrlForAnalysis(config['api_key'], config['server']), ACTION_SUBMIT_URL_FOR_ANALYSIS)),
+            (ACTION_SUBMIT_URL_TO_FILE, CliSubmitUrlToFile(ApiSubmitUrlToFile(config['api_key'], config['server']), ACTION_SUBMIT_URL_TO_FILE)),
             # (ACTION_SEARCH_HASHES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_SEARCH_STATES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_SEARCH_TERMS, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
@@ -226,6 +235,13 @@ class CliManager:
 
         return {'api_usage_limits': api_usage_limits, 'api_usage': api_usage, 'is_api_limit_reached': is_api_limit_reached}
 
+    def rebuild_args(self, args):
+        rebuilt_args = {}
+        for key, value in args.items():
+            rebuilt_args[key.replace('-', '_')] = value
+
+        return rebuilt_args
+
     def run(self):
         self.request_session = requests.Session()
         self.load_config()
@@ -237,7 +253,7 @@ class CliManager:
         current_key_response_headers = current_key_api_object.get_headers()
         
         parser = self.prepare_parser(current_key_json, map_of_available_actions)
-        args = vars(parser.parse_args())
+        args = self.rebuild_args(vars(parser.parse_args()))
 
         if args['chosen_action'] is not None:
             args_iterations = self.prepare_args_iterations(args)

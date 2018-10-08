@@ -44,7 +44,3 @@ class TestSearchHashes(BaseTest):
         self.init_request_scenario()
         run_command(self.get_action_name(), 'not_existing_file', '-v')
         self.see_missing_file_command_state()
-
-    def see_missing_file_command_state(self):
-        assert self.code != 0
-        assert 'No such file or directory:' in self.output

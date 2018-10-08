@@ -1,6 +1,7 @@
 import argparse
 from argparse import ArgumentParser
 from constants import ACTION_GET_ENVIRONMENTS
+import os
 
 
 class DefaultCliArguments:
@@ -14,8 +15,11 @@ class DefaultCliArguments:
     def add_hash_arg(self, help='Md5, sha1 or sha256 hash'):
         self.parser.add_argument('hash', type=str, help=help)
 
+    def add_url_arg(self, help):
+        self.parser.add_argument('url', type=str, help=help)
+
     def add_env_id_arg(self):
-        self.parser.add_argument('env-id', type=int, help='Environment Id')
+        self.parser.add_argument('environment-id', type=int, help='Environment Id')
 
     def add_id_arg(self):
         self.parser.add_argument('id', type=str, help='Id in one of format: \'jobId\' or \'sha256:environmentId\'')
@@ -71,8 +75,22 @@ class DefaultCliArguments:
     def add_report_demo_bulk_look_back_size_opt(self):
         self.parser.add_argument('--look-back-size', '-lbs', type=int, default=400, help='Number of samples which will be fetched and filtered. Once you will get error message about problem with finding all samples, please increase that value')
 
-    def add_submission_file(self):
-        self.parser.add_argument('file', type=argparse.FileType('rb'), help='File to submit')
+    def add_submit_files_arg(self):
+        def validate_path(path):
+            files = [path]
+            files_as_handlers = []
+            if os.path.exists(path) is False:
+                raise argparse.ArgumentTypeError('No such file or directory: \'{}\''.format(path))
+
+            if os.path.isdir(path):
+                files = [os.path.abspath(x) for x in os.listdir(path)]
+
+            for file in files:
+                files_as_handlers.append(open(file, 'rb'))
+
+            return files_as_handlers
+
+        self.parser.add_argument('file', type=validate_path, help='File to submit (when directory given, all files from it will be submitted - non recursively)')
 
     def add_submission_no_share_third_party_opt(self):
         self.parser.add_argument('--private', '-pv', help='When set to \'1\', the sample is never shared with any third party', type=int, choices=['1', '0'], default='1')
@@ -138,8 +156,8 @@ class DefaultCliArguments:
         else:
             self.parser.add_argument('environmentId', type=int, help=environment_id_help)
 
-    def add_nosharevt_argument(self):
-        self.parser.add_argument('--private', '-pv', help='When set to \'1\', the sample is never shared with any third party', type=str, choices=['1', '0'], default='1', dest="nosharevt")
+    def add_no_share_third_party_opt(self):
+        self.parser.add_argument('--private', '-pv', help='When set to \'1\', the sample is never shared with any third party', type=str, choices=['1', '0'], default='1', dest="no_share_third_party")
 
     def add_days_argument(self):
         self.parser.add_argument('days', type=str, help='Days')
@@ -152,9 +170,6 @@ class DefaultCliArguments:
 
     def add_query_search_argument(self):
         self.parser.add_argument('query', type=str, help='Search query. Once you want to search by multiple terms, wrap it into quotes e.g. \'python3 vxapi.py search "filetype_tag:doc filename:invoice"\'')
-
-    def add_submit_file_argument(self):
-        self.parser.add_argument('file', type=argparse.FileType('rb'), help='File to submit')
 
     def add_submitted_document_password_argument(self):
         self.parser.add_argument('--document-password', '-dp', type=str, help='Password used for archive extraction', dest="documentPassword")

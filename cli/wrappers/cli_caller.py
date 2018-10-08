@@ -56,7 +56,7 @@ class CliCaller:
         if 'file' in args:
             del args_to_send['file'] # attaching file is handled by separated method
 
-        for param in ['nosharevt', 'allowCommunityAccess']:
+        for param in ['no_share_third_party', 'allowCommunityAccess']:
             if param in args:
                 args_to_send[param] = 1 if args[param] == 'yes' else 0
 
@@ -132,7 +132,9 @@ class CliCaller:
     def save_files(self):
         api_response = self.api_object.api_response
         identifier = None
-        if 'sha256' in self.given_args:
+        if 'id' in self.given_args:
+            identifier = self.given_args['id']
+        elif 'sha256' in self.given_args:
             identifier = self.given_args['sha256']
 
         filename = '{}-{}-{}'.format(self.action_name, identifier, api_response.headers['Vx-Filename']) if identifier is not None else '{}-{}'.format(self.action_name, api_response.headers['Vx-Filename'])
