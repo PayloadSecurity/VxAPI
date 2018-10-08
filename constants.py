@@ -40,5 +40,7 @@ ACTION_SYSTEM_HEARTBEAT = 'system_get_heartbeat'
 ACTION_KEY_CURRENT = 'key_get_current'
 ACTION_KEY_CREATE = 'key_create'
 
+ACTION_FEED = 'feed_get'
+ACTION_FEED_LATEST = 'feed_get_latest'
 
 MINIMAL_SUPPORTED_INSTANCE_VERSION = '8.20'

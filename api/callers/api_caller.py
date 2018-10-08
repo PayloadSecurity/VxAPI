@@ -155,7 +155,7 @@ class ApiCaller:
             for key, value in url_data.items():
                 searched_key = '$' + key
                 if searched_key in self.endpoint_url:
-                    self.endpoint_url = self.endpoint_url.replace('$' + key, value)
+                    self.endpoint_url = self.endpoint_url.replace('$' + key, str(value))
                     del url_data_copy[key]  # Working on copy, since it's not possible to manipulate dict size, during iteration
 
             if self.request_method_name == self.CONST_REQUEST_METHOD_GET:

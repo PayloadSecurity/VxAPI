@@ -65,6 +65,9 @@ from cli.wrappers.report import *
 from api.callers.system import *
 from cli.wrappers.system import *
 
+from api.callers.feed import *
+from cli.wrappers.feed import *
+
 from cli.arguments_builders import *
 
 from cli.cli_helper import CliHelper
@@ -174,6 +177,9 @@ class CliManager:
 
             (ACTION_KEY_CREATE, CliKeyCreate(ApiKeyCreate(config['api_key'], config['server']), ACTION_KEY_CREATE)),
             (ACTION_KEY_CURRENT, CliKeyCurrent(ApiKeyCurrent(config['api_key'], config['server']), ACTION_KEY_CURRENT)),
+
+            (ACTION_FEED, CliFeed(ApiFeed(config['api_key'], config['server']), ACTION_FEED)),
+            (ACTION_FEED_LATEST, CliFeedLatest(ApiFeedLatest(config['api_key'], config['server']), ACTION_FEED_LATEST)),
         ])
 
     def check_current_key(self):
