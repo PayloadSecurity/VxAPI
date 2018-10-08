@@ -142,44 +142,48 @@ class CliManager:
         config = self.config
 
         return OrderedDict([
+            (ACTION_FEED, CliFeed(ApiFeed(config['api_key'], config['server']), ACTION_FEED)),
+            (ACTION_FEED_LATEST, CliFeedLatest(ApiFeedLatest(config['api_key'], config['server']), ACTION_FEED_LATEST)),
+
+            (ACTION_KEY_CREATE, CliKeyCreate(ApiKeyCreate(config['api_key'], config['server']), ACTION_KEY_CREATE)),
+            (ACTION_KEY_CURRENT, CliKeyCurrent(ApiKeyCurrent(config['api_key'], config['server']), ACTION_KEY_CURRENT)),
+
+            (ACTION_OVERVIEW_GET, CliOverview(ApiOverview(config['api_key'], config['server']), ACTION_OVERVIEW_GET)),
+            (ACTION_OVERVIEW_GET_REFRESH, CliOverviewRefresh(ApiOverviewRefresh(config['api_key'], config['server']), ACTION_OVERVIEW_GET_REFRESH)),
+            (ACTION_OVERVIEW_GET_SAMPLE, CliOverviewSample(ApiOverviewSample(config['api_key'], config['server']), ACTION_OVERVIEW_GET_SAMPLE)),
+            (ACTION_OVERVIEW_GET_SUMMARY, CliOverviewSummary(ApiOverviewSummary(config['api_key'], config['server']), ACTION_OVERVIEW_GET_SUMMARY)),
+
+            (ACTION_REPORT_GET_BULK_DEMO, CliReportDemoBulk(ApiReportDemoBulk(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_DEMO)),
+            (ACTION_REPORT_GET_BULK_SUMMARY, CliReportBulkSummary(ApiReportBulkSummary(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_SUMMARY)),
+            (ACTION_REPORT_GET_DROPPED_FILES, CliReportDroppedFiles(ApiReportDroppedFiles(config['api_key'], config['server']), ACTION_REPORT_GET_DROPPED_FILES)),
+            (ACTION_REPORT_GET_DROPPED_FILE_RAW, CliReportDroppedFileRaw(ApiReportDroppedFileRaw(config['api_key'], config['server']), ACTION_REPORT_GET_DROPPED_FILE_RAW)),
+            (ACTION_REPORT_GET_ENHANCED_SUMMARY, CliReportEnhancedSummary(ApiReportEnhancedSummary(config['api_key'], config['server']), ACTION_REPORT_GET_ENHANCED_SUMMARY)),
+            (ACTION_REPORT_GET_FILE, CliReportFile(ApiReportFile(config['api_key'], config['server']), ACTION_REPORT_GET_FILE)),
+            (ACTION_REPORT_GET_SCREENSHOTS, CliReportScreenshots(ApiReportScreenshots(config['api_key'], config['server']), ACTION_REPORT_GET_SCREENSHOTS)),
+            (ACTION_REPORT_GET_SUMMARY, CliReportSummary(ApiReportSummary(config['api_key'], config['server']), ACTION_REPORT_GET_SUMMARY)),
+            (ACTION_REPORT_GET_STATE, CliReportState(ApiReportState(config['api_key'], config['server']), ACTION_REPORT_GET_STATE)),
+
             (ACTION_SEARCH_HASH, CliSearchHash(ApiSearchHash(config['api_key'], config['server']), ACTION_SEARCH_HASH)),
             (ACTION_SEARCH_HASHES, CliSearchHashes(ApiSearchHashes(config['api_key'], config['server']), ACTION_SEARCH_HASHES)),
             (ACTION_SEARCH_STATES, CliSearchStates(ApiSearchStates(config['api_key'], config['server']), ACTION_SEARCH_STATES)),
             (ACTION_SEARCH_TERMS, CliSearchTerms(ApiSearchTerms(config['api_key'], config['server']), ACTION_SEARCH_TERMS)),
-            (ACTION_GET_OVERVIEW, CliOverview(ApiOverview(config['api_key'], config['server']), ACTION_GET_OVERVIEW)),
-            (ACTION_GET_REFRESHED_OVERVIEW, CliOverviewRefresh(ApiOverviewRefresh(config['api_key'], config['server']), ACTION_GET_REFRESHED_OVERVIEW)),
-            (ACTION_GET_OVERVIEW_SUMMARY, CliOverviewSummary(ApiOverviewSummary(config['api_key'], config['server']), ACTION_GET_OVERVIEW_SUMMARY)),
-            (ACTION_GET_OVERVIEW_SAMPLE, CliOverviewSample(ApiOverviewSample(config['api_key'], config['server']), ACTION_GET_OVERVIEW_SAMPLE)),
+
             (ACTION_SUBMIT_DROPPED_FILE, CliSubmitDroppedFile(ApiSubmitDroppedFile(config['api_key'], config['server']), ACTION_SUBMIT_DROPPED_FILE)),
             (ACTION_SUBMIT_FILE, CliSubmitFile(ApiSubmitFile(config['api_key'], config['server']), ACTION_SUBMIT_FILE)),
             (ACTION_SUBMIT_HASH_FOR_URL, CliSubmitHashForUrl(ApiSubmitHashForUrl(config['api_key'], config['server']), ACTION_SUBMIT_HASH_FOR_URL)),
             (ACTION_SUBMIT_REANALYZE, CliSubmitReanalyze(ApiSubmitReanalyze(config['api_key'], config['server']), ACTION_SUBMIT_REANALYZE)),
             (ACTION_SUBMIT_URL_FOR_ANALYSIS, CliSubmitUrlForAnalysis(ApiSubmitUrlForAnalysis(config['api_key'], config['server']), ACTION_SUBMIT_URL_FOR_ANALYSIS)),
             (ACTION_SUBMIT_URL_TO_FILE, CliSubmitUrlToFile(ApiSubmitUrlToFile(config['api_key'], config['server']), ACTION_SUBMIT_URL_TO_FILE)),
-            (ACTION_REPORT_GET_BULK_SUMMARY, CliReportBulkSummary(ApiReportBulkSummary(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_SUMMARY)),
-            (ACTION_REPORT_GET_BULK_DEMO, CliReportDemoBulk(ApiReportDemoBulk(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_DEMO)),
-            (ACTION_REPORT_GET_DROPPED_FILE_RAW, CliReportDroppedFileRaw(ApiReportDroppedFileRaw(config['api_key'], config['server']), ACTION_REPORT_GET_DROPPED_FILE_RAW)),
-            (ACTION_REPORT_GET_DROPPED_FILES, CliReportDroppedFiles(ApiReportDroppedFiles(config['api_key'], config['server']), ACTION_REPORT_GET_DROPPED_FILES)),
-            (ACTION_REPORT_GET_SUMMARY, CliReportSummary(ApiReportSummary(config['api_key'], config['server']), ACTION_REPORT_GET_SUMMARY)),
-            (ACTION_REPORT_GET_ENHANCED_SUMMARY, CliReportEnhancedSummary(ApiReportEnhancedSummary(config['api_key'], config['server']), ACTION_REPORT_GET_ENHANCED_SUMMARY)),
-            (ACTION_REPORT_GET_FILE, CliReportFile(ApiReportFile(config['api_key'], config['server']), ACTION_REPORT_GET_FILE)),
-            (ACTION_REPORT_GET_SCREENSHOTS, CliReportScreenshots(ApiReportScreenshots(config['api_key'], config['server']), ACTION_REPORT_GET_SCREENSHOTS)),
-            (ACTION_REPORT_GET_STATE, CliReportState(ApiReportState(config['api_key'], config['server']), ACTION_REPORT_GET_STATE)),
+
             (ACTION_SYSTEM_BACKEND, CliSystemBackend(ApiSystemBackend(config['api_key'], config['server']), ACTION_SYSTEM_BACKEND)),
             (ACTION_SYSTEM_ENVIRONMENTS, CliSystemEnvironments(ApiSystemEnvironments(config['api_key'], config['server']), ACTION_SYSTEM_ENVIRONMENTS)),
-            (ACTION_SYSTEM_HEARTBEAT, CliSystemHeartbeat(ApiSystemHeartbeat(config['api_key'], config['server']), ACTION_SYSTEM_HEARTBEAT)),
             (ACTION_SYSTEM_IN_PROGRESS, CliSystemInProgress(ApiSystemInProgress(config['api_key'], config['server']), ACTION_SYSTEM_IN_PROGRESS)),
+            (ACTION_SYSTEM_HEARTBEAT, CliSystemHeartbeat(ApiSystemHeartbeat(config['api_key'], config['server']), ACTION_SYSTEM_HEARTBEAT)),
             (ACTION_SYSTEM_PHP, CliSystemPhp(ApiSystemPhp(config['api_key'], config['server']), ACTION_SYSTEM_PHP)),
-            (ACTION_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['server']), ACTION_SYSTEM_QUEUE_SIZE)),
             (ACTION_SYSTEM_STATE, CliSystemState(ApiSystemState(config['api_key'], config['server']), ACTION_SYSTEM_STATE)),
             (ACTION_SYSTEM_STATS, CliSystemStats(ApiSystemStats(config['api_key'], config['server']), ACTION_SYSTEM_STATS)),
+            (ACTION_SYSTEM_QUEUE_SIZE, CliSystemQueueSize(ApiSystemQueueSize(config['api_key'], config['server']), ACTION_SYSTEM_QUEUE_SIZE)),
             (ACTION_SYSTEM_VERSION, CliSystemVersion(ApiSystemVersion(config['api_key'], config['server']), ACTION_SYSTEM_VERSION)),
-
-            (ACTION_KEY_CREATE, CliKeyCreate(ApiKeyCreate(config['api_key'], config['server']), ACTION_KEY_CREATE)),
-            (ACTION_KEY_CURRENT, CliKeyCurrent(ApiKeyCurrent(config['api_key'], config['server']), ACTION_KEY_CURRENT)),
-
-            (ACTION_FEED, CliFeed(ApiFeed(config['api_key'], config['server']), ACTION_FEED)),
-            (ACTION_FEED_LATEST, CliFeedLatest(ApiFeedLatest(config['api_key'], config['server']), ACTION_FEED_LATEST)),
         ])
 
     def check_current_key(self):
