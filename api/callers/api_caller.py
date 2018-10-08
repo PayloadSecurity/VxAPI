@@ -35,7 +35,7 @@ class ApiCaller:
     api_success_msg = 'Your request was successfully processed by Falcon Sandbox'
     api_expected_error_msg = 'API error has occurred. HTTP code: {}, message: \'{}\''
 
-    api_response = None
+    api_response = None # TODO - rebuild the way how we set those values to use abstract methods instead
     api_expected_data_type = CONST_EXPECTED_DATA_TYPE_JSON
     api_response_json = {}
 
@@ -51,7 +51,7 @@ class ApiCaller:
                 raise OptionNotDeclaredError('Value for \'{}\' should be declared in class \'{}\'.'.format(requested_field, self.__class__.__name__))
 
     def call(self, request_handler, headers={'User-agent': 'VxApi Connector'}):
-        if ':' in self.endpoint_url:
+        if '$' in self.endpoint_url:
             raise UrlBuildError('Can\'t call API endpoint with url \'{}\', when some placeholders are still not filled.'.format(self.endpoint_url))
 
         caller_function = getattr(request_handler, self.request_method_name)
@@ -149,13 +149,13 @@ class ApiCaller:
         return self.api_response.headers
 
     def build_url(self, params):
-        if ':' in self.endpoint_url:
+        if '$' in self.endpoint_url:
             url_data = params
             url_data_copy = url_data.copy()
             for key, value in url_data.items():
-                searched_key = ':' + key
+                searched_key = '$' + key
                 if searched_key in self.endpoint_url:
-                    self.endpoint_url = self.endpoint_url.replace(':' + key, value)
+                    self.endpoint_url = self.endpoint_url.replace('$' + key, value)
                     del url_data_copy[key]  # Working on copy, since it's not possible to manipulate dict size, during iteration
 
             if self.request_method_name == self.CONST_REQUEST_METHOD_GET:

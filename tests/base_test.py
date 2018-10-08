@@ -3,6 +3,7 @@ import abc
 import subprocess
 import pytest
 import os
+import hashlib
 
 class BaseTest(object):
 
@@ -54,12 +55,13 @@ class BaseTest(object):
         assert self.code != 0
         assert 'No such file or directory:' in self.output
 
-    def see_file_response(self, path, content, mode='r'):
+    def see_file_response(self, path, expected_file_hash, mode='rb'):
         prepared_file_path = os.path.dirname(os.path.realpath(__file__)).split('/')[:-1] + [path]
         final_output_path = '/'.join(prepared_file_path)
 
         assert 'Response contains files. They were saved in the output folder'.format(os.path.dirname(final_output_path)) in self.output
 
         file_handler = open(final_output_path, mode)
-        assert file_handler.read() == content
+
+        assert hashlib.sha256(file_handler.read()).hexdigest() == expected_file_hash
 

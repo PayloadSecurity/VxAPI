@@ -18,7 +18,7 @@ class TestGetOverviewSummary(BaseTest):
         return 'overview_get_summary'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'overview.get_overview_summary'
+        os.environ['TEST_SCENARIO'] = 'overview.overview_summary'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

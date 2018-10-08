@@ -15,12 +15,12 @@ scenarios = [
         }
     },
     {
-        "url": "/overview/test/sample",
+        "url": "/report/test/file/bin",
         "method": "get",
         "status_code": 200,
         "content": file_handler.read(),
         "headers": {
-            "content-type": "application/gzip",
+            "content-type": "application/octet-stream",
             "vx-filename": "my-archive.bin.gz",
             "webservice-version": "8.10",
             "api-version": "2.2.0",

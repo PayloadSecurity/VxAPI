@@ -9,3 +9,4 @@ class CliReportFile(CliCaller):
         parser_argument_builder = super(CliReportFile, self).add_parser_args(child_parser)
         parser_argument_builder.add_id_arg()
         parser_argument_builder.add_report_file_type_arg()
+        parser_argument_builder.add_file_output_path_opt()

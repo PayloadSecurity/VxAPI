@@ -59,6 +59,9 @@ from cli.wrappers.overview import *
 from api.callers.submit import *
 from cli.wrappers.submit import *
 
+from api.callers.report import *
+from cli.wrappers.report import *
+
 from cli.arguments_builders import *
 
 from cli.cli_helper import CliHelper
@@ -171,6 +174,15 @@ class CliManager:
             (ACTION_SUBMIT_REANALYZE, CliSubmitReanalyze(ApiSubmitReanalyze(config['api_key'], config['server']), ACTION_SUBMIT_REANALYZE)),
             (ACTION_SUBMIT_URL_FOR_ANALYSIS, CliSubmitUrlForAnalysis(ApiSubmitUrlForAnalysis(config['api_key'], config['server']), ACTION_SUBMIT_URL_FOR_ANALYSIS)),
             (ACTION_SUBMIT_URL_TO_FILE, CliSubmitUrlToFile(ApiSubmitUrlToFile(config['api_key'], config['server']), ACTION_SUBMIT_URL_TO_FILE)),
+            (ACTION_REPORT_GET_BULK_SUMMARY, CliReportBulkSummary(ApiReportBulkSummary(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_SUMMARY)),
+            (ACTION_REPORT_GET_BULK_DEMO, CliReportDemoBulk(ApiReportDemoBulk(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_DEMO)),
+            (ACTION_REPORT_GET_DROPPED_FILE_RAW, CliReportDroppedFileRaw(ApiReportDroppedFileRaw(config['api_key'], config['server']), ACTION_REPORT_GET_DROPPED_FILE_RAW)),
+            (ACTION_REPORT_GET_DROPPED_FILES, CliReportDroppedFiles(ApiReportDroppedFiles(config['api_key'], config['server']), ACTION_REPORT_GET_DROPPED_FILES)),
+            (ACTION_REPORT_GET_SUMMARY, CliReportSummary(ApiReportSummary(config['api_key'], config['server']), ACTION_REPORT_GET_SUMMARY)),
+            (ACTION_REPORT_GET_ENHANCED_SUMMARY, CliReportEnhancedSummary(ApiReportEnhancedSummary(config['api_key'], config['server']), ACTION_REPORT_GET_ENHANCED_SUMMARY)),
+            (ACTION_REPORT_GET_FILE, CliReportFile(ApiReportFile(config['api_key'], config['server']), ACTION_REPORT_GET_FILE)),
+            (ACTION_REPORT_GET_SCREENSHOTS, CliReportScreenshots(ApiReportScreenshots(config['api_key'], config['server']), ACTION_REPORT_GET_SCREENSHOTS)),
+            (ACTION_REPORT_GET_STATE, CliReportState(ApiReportState(config['api_key'], config['server']), ACTION_REPORT_GET_STATE)),
             # (ACTION_SEARCH_HASHES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_SEARCH_STATES, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),
             # (ACTION_SEARCH_TERMS, CliSearch(ApiSearch(config['api_key'], config['api_secret'], config['server']))),

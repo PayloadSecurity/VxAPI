@@ -9,18 +9,7 @@ class CliFileWriter:
 
     @staticmethod
     def write(dir_path, filename, content):
-        if os.path.exists(dir_path):
-            if not os.path.isdir(dir_path):
-                raise FailedFileSavingError('Given output path \'{}\' points a file instead of directory.'.format(dir_path))
-        else:
-            try:
-                os.makedirs(dir_path)
-            except OSError as exc:
-                if exc.errno == errno.EACCES:
-                    raise FailedFileSavingError('Failed to create directory in \'{}\'. Possibly it\'s connected with file rights.'.format(dir_path))
-                else:
-                    raise
-
+        CliFileWriter.create_dir_if_not_exists(dir_path)
         retrieved_filename_without_gz_ext, retrieved_file_extension = os.path.splitext(filename)
 
         mode = 'wb' if content.find(b"\r\n") else 'w'
@@ -45,3 +34,17 @@ class CliFileWriter:
             f_out.close()
 
         return f_out_name
+
+    @staticmethod
+    def create_dir_if_not_exists(dir_path):
+        if os.path.exists(dir_path):
+            if not os.path.isdir(dir_path):
+                raise FailedFileSavingError('Given output path \'{}\' points a file instead of directory.'.format(dir_path))
+        else:
+            try:
+                os.makedirs(dir_path)
+            except OSError as exc:
+                if exc.errno == errno.EACCES:
+                    raise FailedFileSavingError('Failed to create directory in \'{}\'. Possibly it\'s connected with file rights.'.format(dir_path))
+                else:
+                    raise

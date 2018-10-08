@@ -45,5 +45,15 @@ ACTION_SUBMIT_REANALYZE = 'submit_reanalyze'
 ACTION_SUBMIT_URL_FOR_ANALYSIS = 'submit_url_for_analysis'
 ACTION_SUBMIT_URL_TO_FILE = 'submit_url_to_file'
 
+ACTION_REPORT_GET_BULK_SUMMARY = 'report_get_bulk_summary'
+ACTION_REPORT_GET_BULK_DEMO = 'report_get_demo_bulk'
+ACTION_REPORT_GET_DROPPED_FILES = 'report_get_dropped_files'
+ACTION_REPORT_GET_DROPPED_FILE_RAW = 'report_get_raw_dropped_file'
+ACTION_REPORT_GET_ENHANCED_SUMMARY = 'report_get_enhanced_summary'
+ACTION_REPORT_GET_FILE = 'report_get_file'
+ACTION_REPORT_GET_SCREENSHOTS = 'report_get_screenshots'
+ACTION_REPORT_GET_STATE = 'report_get_state'
+ACTION_REPORT_GET_SUMMARY = 'report_get_summary'
+
 
 MINIMAL_SUPPORTED_INSTANCE_VERSION = '8.10'
