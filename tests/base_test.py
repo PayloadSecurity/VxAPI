@@ -5,6 +5,7 @@ import pytest
 import os
 import hashlib
 
+
 class BaseTest(object):
 
     output = None

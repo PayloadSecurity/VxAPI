@@ -1,11 +1,8 @@
-# content of test_pyconv.py
-
 import os
 
 from base_test import BaseTest
 
-# we reuse a bit of pytest's own testing machinery, this should eventually come
-# from a separatedly installable pytest-cli plugin.
+
 pytest_plugins = ["pytester"]
 
 
