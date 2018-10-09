@@ -43,4 +43,13 @@ ACTION_KEY_CREATE = 'key_create'
 ACTION_FEED = 'feed_get'
 ACTION_FEED_LATEST = 'feed_get_latest'
 
+ACTION_SCAN_CONVERT_TO_FULL = 'scan_convert_to_full'
+ACTION_SCAN_FILE = 'scan_file'
+ACTION_SCAN_SCAN = 'scan_get_result'
+ACTION_SCAN_STATE = 'scan_get_scanners'
+ACTION_SCAN_URL_FOR_ANALYSIS = 'scan_url_for_analysis'
+ACTION_SCAN_URL_TO_FILE = 'scan_url_to_file'
+
 MINIMAL_SUPPORTED_INSTANCE_VERSION = '8.20'
+
+ACTION_WITH_MULTIPLE_CALL_SUPPORT = [ACTION_SUBMIT_FILE, ACTION_SCAN_FILE]

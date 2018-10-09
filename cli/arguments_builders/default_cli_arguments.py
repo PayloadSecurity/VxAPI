@@ -1,6 +1,7 @@
 import argparse
 from argparse import ArgumentParser
 from constants import ACTION_SYSTEM_ENVIRONMENTS
+from constants import ACTION_SCAN_STATE
 import os
 
 
@@ -15,14 +16,17 @@ class DefaultCliArguments:
     def add_hash_arg(self, help='Md5, sha1 or sha256 hash'):
         self.parser.add_argument('hash', type=str, help=help)
 
+    def add_scan_type_arg(self):
+        self.parser.add_argument('scan-type', type=str, help='Type of scan (please use \'{}\' action to fetch all available scanners)'.format(ACTION_SCAN_STATE))
+
     def add_url_arg(self, help):
         self.parser.add_argument('url', type=str, help=help)
 
     def add_env_id_arg(self):
         self.parser.add_argument('environment-id', type=int, help='Environment Id')
 
-    def add_id_arg(self):
-        self.parser.add_argument('id', type=str, help='Id in one of format: \'jobId\' or \'sha256:environmentId\'')
+    def add_id_arg(self, help='Id in one of format: \'jobId\' or \'sha256:environmentId\''):
+        self.parser.add_argument('id', type=str, help=help)
 
     def add_feed_days_arg(self):
         self.parser.add_argument('days', type=int, help='Number of days')
@@ -149,12 +153,12 @@ class DefaultCliArguments:
     def add_dropped_file_name_argument(self):
         self.parser.add_argument('fileName', type=str, help='Dropped file name')
 
-    def add_environment_id_argument(self, required: bool = False):
+    def add_environment_id_argument(self, required: bool = False): # TODO - do some cleaning connected with that doubled methd
         environment_id_help = 'Sample Environment ID (use \'{}\' action to fetch all available)'.format(ACTION_SYSTEM_ENVIRONMENTS)
         if required is False:
-            self.parser.add_argument('--environmentId', '-env', type=int, help=environment_id_help)
+            self.parser.add_argument('--environmend-id', '-env', type=int, help=environment_id_help)
         else:
-            self.parser.add_argument('environmentId', type=int, help=environment_id_help)
+            self.parser.add_argument('environment-id', type=int, help=environment_id_help)
 
     def add_no_share_third_party_opt(self):
         self.parser.add_argument('--private', '-pv', help='When set to \'1\', the sample is never shared with any third party', type=str, choices=['1', '0'], default='1', dest="no_share_third_party")

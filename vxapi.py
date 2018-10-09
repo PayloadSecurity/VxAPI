@@ -68,6 +68,9 @@ from cli.wrappers.system import *
 from api.callers.feed import *
 from cli.wrappers.feed import *
 
+from api.callers.scan import *
+from cli.wrappers.scan import *
+
 from cli.arguments_builders import *
 
 from cli.cli_helper import CliHelper
@@ -163,6 +166,13 @@ class CliManager:
             (ACTION_REPORT_GET_SUMMARY, CliReportSummary(ApiReportSummary(config['api_key'], config['server']), ACTION_REPORT_GET_SUMMARY)),
             (ACTION_REPORT_GET_STATE, CliReportState(ApiReportState(config['api_key'], config['server']), ACTION_REPORT_GET_STATE)),
 
+            (ACTION_SCAN_CONVERT_TO_FULL, CliScanConvertToFull(ApiScanConvertToFull(config['api_key'], config['server']), ACTION_SCAN_CONVERT_TO_FULL)),
+            (ACTION_SCAN_FILE, CliScanFile(ApiScanFile(config['api_key'], config['server']), ACTION_SCAN_FILE)),
+            (ACTION_SCAN_SCAN, CliScanScan(ApiScanScan(config['api_key'], config['server']), ACTION_SCAN_SCAN)),
+            (ACTION_SCAN_STATE, CliScanState(ApiScanState(config['api_key'], config['server']), ACTION_SCAN_STATE)),
+            (ACTION_SCAN_URL_FOR_ANALYSIS, CliScanUrlForAnalysis(ApiScanUrlForAnalysis(config['api_key'], config['server']), ACTION_SCAN_URL_FOR_ANALYSIS)),
+            (ACTION_SCAN_URL_TO_FILE, CliScanUrlToFile(ApiScanUrlToFile(config['api_key'], config['server']), ACTION_SCAN_URL_TO_FILE)),
+
             (ACTION_SEARCH_HASH, CliSearchHash(ApiSearchHash(config['api_key'], config['server']), ACTION_SEARCH_HASH)),
             (ACTION_SEARCH_HASHES, CliSearchHashes(ApiSearchHashes(config['api_key'], config['server']), ACTION_SEARCH_HASHES)),
             (ACTION_SEARCH_STATES, CliSearchStates(ApiSearchStates(config['api_key'], config['server']), ACTION_SEARCH_STATES)),
@@ -220,7 +230,7 @@ class CliManager:
 
     def prepare_args_iterations(self, args):
         args_iterations = []
-        if args['chosen_action'] == ACTION_SUBMIT_FILE:
+        if args['chosen_action'] in ACTION_WITH_MULTIPLE_CALL_SUPPORT:
             for file in args['file']:
                 arg_iter = args.copy()
                 arg_iter['file'] = file
@@ -265,7 +275,8 @@ class CliManager:
 
         if args['chosen_action'] is not None:
             args_iterations = self.prepare_args_iterations(args)
-            if_multiple_calls = True if args['chosen_action'] == ACTION_SUBMIT_FILE and len(args['file']) > 1 else False
+            # TODO - add more endpoints which are supporting multiple calls
+            if_multiple_calls = True if args['chosen_action'] in ACTION_WITH_MULTIPLE_CALL_SUPPORT and len(args['file']) > 1 else False
             cli_object = map_of_available_actions[args['chosen_action']]
 
             if args['verbose'] is True:
@@ -294,14 +305,15 @@ class CliManager:
                     if if_multiple_calls is False or index == 0:
                         CliMsgPrinter.print_api_key_info(current_key_json)
 
-                    if arg_iter['chosen_action'] == ACTION_SUBMIT_FILE:
+                    if arg_iter['chosen_action'] in ACTION_WITH_MULTIPLE_CALL_SUPPORT:
                         if if_multiple_calls is True and index == 0:
                             print(Color.control('Starting the process of sending multiple files ...'))
 
+                    if 'file' in arg_iter:
                         iter_cli_object.attach_file(arg_iter['file'])
 
                     CliMsgPrinter.print_call_info(iter_cli_object)
-                elif arg_iter['chosen_action'] == ACTION_SUBMIT_FILE:
+                elif 'file' in arg_iter:
                     iter_cli_object.attach_file(arg_iter['file'])
 
                 if arg_iter['chosen_action'] != ACTION_KEY_CURRENT:
