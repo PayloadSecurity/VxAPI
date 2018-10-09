@@ -24,7 +24,7 @@ class TestSubmitUrlToFile(BaseTest):
     def test_verbose_query(self, run_command):
         self.init_request_scenario()
 
-        run_command(self.get_action_name(), 'google.com', '5', '-v')
+        run_command(self.get_action_name(), 'example.com', '5', '-v')
         self.see_headers()
         self.see_response(self.expected_response)
-        self.see_sent_params('POST', {'url': 'google.com', 'environment_id': 5, 'no_share_third_party': 0})
+        self.see_sent_params('POST', {'url': 'example.com', 'environment_id': 5, 'no_share_third_party': 0})

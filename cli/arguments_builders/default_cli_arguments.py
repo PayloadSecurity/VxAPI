@@ -34,30 +34,6 @@ class DefaultCliArguments:
     def add_key_uid_arg(self):
         self.parser.add_argument('uid', type=str, help='Any string to allow find this key later')
 
-    def add_datetime_from_arg(self): # TODO - add datetime validator
-        self.parser.add_argument('date-from', type=str, help='From date. Please specify in the following format: ‘Y-m-d H:i:s’')
-
-    def add_datetime_to_arg(self):
-        self.parser.add_argument('date-to', type=str, help='To date. Please specify in the following format: ‘Y-m-d H:i:s’')
-
-    def add_nssf_format_output_opt(self):
-        self.parser.add_argument('--format', '-f', type=str, help='Output format', choices=['md5', 'sha1', 'sha256'], default='sha256')
-
-    def add_nssf_visibility_opt(self):
-        self.parser.add_argument('--visibility', '-vs', type=str, help='Output format', choices=['all', 'public', 'private'], default='public')
-
-    def add_nssf_type_opt(self):
-        self.parser.add_argument('--type', '-t', type=str, help='Type of samples', choices=['all', 'malicious', 'clean'], default='all')
-
-    def add_file_output_path_opt(self):
-        self.parser.add_argument('--output', '-o', type=str, default='output', help='File output path')
-
-    def add_submit_name_option(self):
-        self.parser.add_argument('--submitname', '-sn', type=str, help='\'submission name\' field that will be used for file type detection and analysis')
-
-    def add_comment_argument(self):
-        self.parser.add_argument('--comment', '-c', type=str, help='Add comment (e.g. #hashtag) to sample')
-
     def add_file_with_hash_list_arg(self, allowed_hashes):
         self.parser.add_argument('hashes-file', type=argparse.FileType('r'), help='Path to file containing list of sample hashes separated by new line (allowed: {})'.format(', '.join(allowed_hashes)))
 
@@ -67,18 +43,6 @@ class DefaultCliArguments:
     def add_report_file_type_arg(self):
         self.parser.add_argument('type', type=str, choices=['bin', 'json', 'pdf', 'crt', 'maec', 'stix', 'misp', 'misp-json', 'openioc', 'html', 'pcap', 'memory', 'xml'], help='Type of requested content')
 
-    def add_report_demo_bulk_modify_hash_opt(self):
-        self.parser.add_argument('--modify-hash', '-mh', action='store_true', default=False, help='When set, will add null byte at the end of sample file')
-
-    def add_report_demo_bulk_av_min_opt(self):
-        self.parser.add_argument('--av-min', '-an', type=int, default=5, help='The minimum required AV detect')
-
-    def add_report_demo_bulk_av_max_opt(self):
-        self.parser.add_argument('--av-max', '-ax', type=int, default=15, help='The maximum required AV detect')
-
-    def add_report_demo_bulk_look_back_size_opt(self):
-        self.parser.add_argument('--look-back-size', '-lbs', type=int, default=400, help='Number of samples which will be fetched and filtered. Once you will get error message about problem with finding all samples, please increase that value')
-
     def add_submit_files_arg(self):
         def validate_path(path):
             files = [path]
@@ -87,7 +51,12 @@ class DefaultCliArguments:
                 raise argparse.ArgumentTypeError('No such file or directory: \'{}\''.format(path))
 
             if os.path.isdir(path):
-                files = [os.path.abspath(x) for x in os.listdir(path)]
+                if path.startswith('/') is True:  # Given path is absolute
+                    abs_path = path
+                else:
+                    abs_path = '/'.join(os.path.dirname(os.path.realpath(__file__)).split('/')[:-2] + [path])
+
+                files = list(filter(lambda path: os.path.isfile(path), ['{}/{}'.format(abs_path, x) for x in os.listdir(path)]))
 
             for file in files:
                 files_as_handlers.append(open(file, 'rb'))
@@ -95,6 +64,15 @@ class DefaultCliArguments:
             return files_as_handlers
 
         self.parser.add_argument('file', type=validate_path, help='File to submit (when directory given, all files from it will be submitted - non recursively)')
+
+    def add_file_output_path_opt(self):
+        self.parser.add_argument('--output', '-o', type=str, default='output', help='File output path')
+
+    def add_submit_name_opt(self):
+        self.parser.add_argument('--submitname', '-sn', type=str, help='\'submission name\' field that will be used for file type detection and analysis')
+
+    def add_comment_opt(self):
+        self.parser.add_argument('--comment', '-c', type=str, help='Add comment (e.g. #hashtag) to sample')
 
     def add_submission_no_share_third_party_opt(self):
         self.parser.add_argument('--private', '-pv', help='When set to \'1\', the sample is never shared with any third party', type=int, choices=['1', '0'], default='1')

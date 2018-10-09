@@ -46,7 +46,7 @@ class SearchCliArguments(DefaultCliArguments):
         self.parser.add_argument('--domain', type=str, help='Domain e.g. checkip.dyndns.org')
 
     def add_search_term_url_opt(self):
-        self.parser.add_argument('--url', type=str, help='HTTP Request Substring e.g. google')
+        self.parser.add_argument('--url', type=str, help='HTTP Request Substring e.g. example')
 
     def add_search_term_similar_to_opt(self):
         self.parser.add_argument('--similar-to', type=str, help='Similar Samples e.g. <sha266>')

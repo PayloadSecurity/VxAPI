@@ -19,13 +19,13 @@ class TestSubmitHashForUrl(BaseTest):
     def test_base_query(self, run_command):
         self.init_request_scenario()
 
-        run_command(self.get_action_name(), 'google.com')
+        run_command(self.get_action_name(), 'example.com')
         self.see_response(self.expected_response)
 
     def test_verbose_query(self, run_command):
         self.init_request_scenario()
 
-        run_command(self.get_action_name(), 'google.com', '-v')
+        run_command(self.get_action_name(), 'example.com', '-v')
         self.see_headers()
         self.see_response(self.expected_response)
-        self.see_sent_params('POST', {'url': 'google.com'})
+        self.see_sent_params('POST', {'url': 'example.com'})
