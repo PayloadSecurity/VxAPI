@@ -102,6 +102,7 @@ class CliManager:
     program_name = 'VxWebService Python API Connector'
     vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
     request_session = None
+    loaded_action = None
 
     def load_config(self):
         if is_test_env is True:
@@ -240,16 +241,17 @@ class CliManager:
             
         return args_iterations
 
-    def prepare_api_usage_data(self, api_limits):
+    def prepare_api_query_usage_data(self, api_limits):
         api_usage = OrderedDict()
         api_usage_limits = api_limits['limits']
         is_api_limit_reached = False
 
-        for period, used_limit in api_limits['used'].items():
-            # Given request is made after checking api limits. It means that we have to add 1 to current limits, to simulate that what happen after making requested API call TODO - check that logic
-            api_usage[period] = used_limit + 1
-            if is_api_limit_reached is False and api_usage[period] == api_usage_limits[period]:
-                is_api_limit_reached = True
+        if api_limits['used']:
+            for period, used_limit in api_limits['used'].items():
+                # Given request is made after checking api limits. It means that we have to add 1 to current limits, to simulate that what happen after making requested API call
+                api_usage[period] = used_limit + 1
+                if is_api_limit_reached is False and api_usage[period] == api_usage_limits[period]:
+                    is_api_limit_reached = True
 
         return {'api_usage_limits': api_usage_limits, 'api_usage': api_usage, 'is_api_limit_reached': is_api_limit_reached}
 
@@ -272,10 +274,10 @@ class CliManager:
         
         parser = self.prepare_parser(current_key_json, map_of_available_actions)
         args = self.rebuild_args(vars(parser.parse_args()))
+        self.loaded_action = args['chosen_action']
 
         if args['chosen_action'] is not None:
             args_iterations = self.prepare_args_iterations(args)
-            # TODO - add more endpoints which are supporting multiple calls
             if_multiple_calls = True if args['chosen_action'] in ACTION_WITH_MULTIPLE_CALL_SUPPORT and len(args['file']) > 1 else False
             cli_object = map_of_available_actions[args['chosen_action']]
 
@@ -288,9 +290,12 @@ class CliManager:
             CliPrompts.prompt_for_sharing_confirmation(args, self.config['server'])
             CliHelper.check_if_version_is_supported(args, current_key_response_headers['Webservice-Version'], self.config['server'])
             submission_limits = json.loads(current_key_response_headers['Submission-Limits']) if 'Submission-Limits' in current_key_response_headers else {}
+            quick_scan_limits = json.loads(current_key_response_headers['Quick-Scan-Limits']) if 'Quick-Scan-Limits' in current_key_response_headers else {}
             api_limits = json.loads(current_key_response_headers['Api-Limits'])
+            number_of_iterations = len(args_iterations)
 
             for index, arg_iter in enumerate(args_iterations):
+                current_iteration = '{}/{}'.format(index + 1, number_of_iterations) if if_multiple_calls is True else None
                 iter_cli_object = deepcopy(cli_object)
                 iter_cli_object.attach_args(arg_iter)
 
@@ -300,19 +305,21 @@ class CliManager:
                 if arg_iter['verbose'] is True:
                     # if arg_iter['chosen_action'] != ACTION_KEY_CURRENT and (if_multiple_calls is False or index == 0) and 'used' in api_limits:
                     if (if_multiple_calls is False or index == 0) and 'used' in api_limits:
-                        CliMsgPrinter.print_usage_info(**self.prepare_api_usage_data(api_limits))
+                        CliMsgPrinter.print_usage_info(**self.prepare_api_query_usage_data(api_limits))
 
                     if if_multiple_calls is False or index == 0:
                         CliMsgPrinter.print_api_key_info(current_key_json)
 
-                    if arg_iter['chosen_action'] in ACTION_WITH_MULTIPLE_CALL_SUPPORT:
-                        if if_multiple_calls is True and index == 0:
-                            print(Color.control('Starting the process of sending multiple files ...'))
-
                     if 'file' in arg_iter:
                         iter_cli_object.attach_file(arg_iter['file'])
 
-                    CliMsgPrinter.print_call_info(iter_cli_object)
+                    if if_multiple_calls is False:
+                        CliMsgPrinter.print_full_call_info(iter_cli_object)
+                    else:
+                        if index == 0:
+                            CliMsgPrinter.print_shorten_call_info(iter_cli_object)
+
+                        CliMsgPrinter.print_shortest_call_info(iter_cli_object, current_iteration)
                 elif 'file' in arg_iter:
                     iter_cli_object.attach_file(arg_iter['file'])
 
@@ -328,9 +335,9 @@ class CliManager:
                     iter_cli_object = current_key_cli_object
 
                 if arg_iter['verbose'] is True:
-                    CliMsgPrinter.print_response_summary(arg_iter, iter_cli_object, if_multiple_calls)
+                    CliMsgPrinter.print_response_summary(arg_iter, iter_cli_object, current_iteration)
                 elif if_multiple_calls:
-                    print(Color.control(arg_iter['file'].name))
+                    print(Color.control('{} - {}'.format(arg_iter['file'].name, current_iteration)))
 
                 print(iter_cli_object.get_result_msg())
 

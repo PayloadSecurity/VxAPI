@@ -6,14 +6,29 @@ import json
 
 class CliMsgPrinter:
 
+    date_form = '{:%Y-%m-%d %H:%M:%S}'
+
     @staticmethod
-    def print_call_info(cli_object):
-        print(Color.control('Request was sent at ' + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())))
+    def print_full_call_info(cli_object):
+        print(Color.control('Request was sent at {}'.format(CliMsgPrinter.date_form.format(datetime.datetime.now()))))
         print('Endpoint URL: {}'.format(cli_object.api_object.get_full_endpoint_url()))
         print('HTTP Method: {}'.format(cli_object.api_object.request_method_name.upper()))
         print('Sent GET params: {}'.format(cli_object.api_object.params))
         print('Sent POST params: {}'.format(cli_object.api_object.data))
         print('Sent files: {}'.format(cli_object.api_object.files))
+
+    @staticmethod
+    def print_shortest_call_info(cli_object, iteration):
+        print(Color.control('Request was sent at {} - {}'.format(CliMsgPrinter.date_form.format(datetime.datetime.now()), iteration)))
+        print('Sent files: {}'.format(cli_object.api_object.files))
+
+    @staticmethod
+    def print_shorten_call_info(cli_object):
+        print(Color.control('Endpoint data which will be reached:'))
+        print('Endpoint URL: {}'.format(cli_object.api_object.get_full_endpoint_url()))
+        print('HTTP Method: {}'.format(cli_object.api_object.request_method_name.upper()))
+        print('Sent GET params: {}'.format(cli_object.api_object.params))
+        print('Sent POST params: {}'.format(cli_object.api_object.data))
 
     @staticmethod
     def print_error_info(e):
@@ -38,11 +53,11 @@ class CliMsgPrinter:
 
 
     @staticmethod
-    def print_response_summary(arg_iter, iter_cli_object, if_multiple_calls):
-        print(Color.control('Received response at ' + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())))
+    def print_response_summary(arg_iter, iter_cli_object, iteration=None):
+        print(Color.control('Received response at {}{}'.format(CliMsgPrinter.date_form.format(datetime.datetime.now()), '- {}'.format(iteration) if iteration is not None else '')))
         print('Response status code: {}'.format(iter_cli_object.get_colored_response_status_code()))
         print('Message: {}'.format(iter_cli_object.get_colored_prepared_response_msg()))
         show_response_msg = 'Showing response'
-        if if_multiple_calls is True:
-            show_response_msg = '{} for file \'{}\''.format(show_response_msg, arg_iter['file'].name)
+        if iteration is not None:
+            show_response_msg = '{} for file \'{}\' - {}'.format(show_response_msg, arg_iter['file'].name, iteration)
         print(Color.control(show_response_msg))

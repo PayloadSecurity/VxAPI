@@ -8,4 +8,3 @@ class CliScanScan(CliCaller):
     def add_parser_args(self, child_parser):
         parser_argument_builder = super(CliScanScan, self).add_parser_args(child_parser)
         parser_argument_builder.add_id_arg('ID of scan')
-        parser_argument_builder.add_sha256_arg('SHA256 of file or url')

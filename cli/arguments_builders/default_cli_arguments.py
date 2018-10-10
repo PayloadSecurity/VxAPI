@@ -5,7 +5,7 @@ from constants import ACTION_SCAN_STATE
 import os
 
 
-class DefaultCliArguments:
+class DefaultCliArguments: # TODO - do some cleaning there
 
     def __init__(self, parser: ArgumentParser):
         self.parser = parser
