@@ -29,4 +29,4 @@ class TestScanFile(BaseTest):
         self.see_headers()
         self.see_response(self.expected_response)
         self.see_sent_files('tests/_data/hashes')
-        self.see_sent_params('POST', {'scan_type': 'all'})
+        self.see_sent_params('POST', {'scan_type': 'all', 'no_share_third_party': 1, 'allow_community_access': 1})

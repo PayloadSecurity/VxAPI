@@ -19,13 +19,13 @@ class TestScanScan(BaseTest):
     def test_base_query(self, run_command):
         self.init_request_scenario()
 
-        run_command(self.get_action_name(), 'test', 'test_me')
+        run_command(self.get_action_name(), 'test')
         self.see_response(self.expected_response)
 
     def test_verbose_query(self, run_command):
         self.init_request_scenario()
 
-        run_command(self.get_action_name(), 'test', 'test_me', '-v')
+        run_command(self.get_action_name(), 'test', '-v')
         self.see_headers()
         self.see_response(self.expected_response)
-        self.see_sent_params('GET', {'sha256': 'test_me'})
+        self.see_sent_params('GET', {})

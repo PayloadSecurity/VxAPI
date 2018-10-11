@@ -27,6 +27,7 @@ class TestSearchTerms(BaseTest):
     @pytest.mark.parametrize("command_args,expected_sent_params", [
         (['--filename', 'exe'], {'filename': 'exe'}),
         (['--av-detect', '70-80', '--filename', 'exe', '--similar-to', 'qwerty'], {'filename': 'exe', 'av_detect': '70-80', 'similar_to': 'qwerty'}),
+        (['--av-detect', '70', '--filename', 'exe', '--similar-to', 'qwerty'], {'filename': 'exe', 'av_detect': '70', 'similar_to': 'qwerty'}),
     ])
     def test_verbose_query(self, run_command, command_args, expected_sent_params):
         self.init_request_scenario()

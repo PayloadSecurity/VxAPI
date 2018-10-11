@@ -20,13 +20,13 @@ class TestReportDroppedFileRaw(BaseTest):
     def test_base_query(self, run_command):
         self.init_request_scenario()
 
-        run_command(self.get_action_name(), 'test')
+        run_command(self.get_action_name(), 'test', 'hash_test')
         print(self.output)
         self.see_file_response('output/report_get_raw_dropped_file-test-my-archive.bin', self.expected_hash)
 
     def test_verbose_query(self, run_command):
         self.init_request_scenario()
 
-        run_command(self.get_action_name(), 'test', '-v')
+        run_command(self.get_action_name(), 'test', 'hash_test', '-v')
         self.see_headers()
         self.see_file_response('output/report_get_raw_dropped_file-test-my-archive.bin', self.expected_hash)

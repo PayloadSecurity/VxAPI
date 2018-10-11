@@ -1,9 +1,13 @@
 from cli.wrappers.cli_caller import CliCaller
+from cli.arguments_builders.submission_cli_arguments import SubmissionCliArguments
 
 
 class CliSubmitDroppedFile(CliCaller):
 
     help_description = 'Submit dropped file for analysis by \'{}\''
+
+    def build_argument_builder(self, child_parser):
+        return SubmissionCliArguments(child_parser)
 
     def add_parser_args(self, child_parser):
         parser_argument_builder = super(CliSubmitDroppedFile, self).add_parser_args(child_parser)

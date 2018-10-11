@@ -15,7 +15,7 @@ scenarios = [
         }
     },
     {
-        "url": "/report/test/dropped-file-raw",
+        "url": "/report/test/dropped-file-raw/hash_test",
         "method": "get",
         "status_code": 200,
         "content": file_handler.read(),

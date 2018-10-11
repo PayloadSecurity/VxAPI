@@ -29,4 +29,4 @@ class TestSubmitFile(BaseTest):
         self.see_headers()
         self.see_response(self.expected_response)
         self.see_sent_files('tests/_data/hashes')
-        self.see_sent_params('POST', {'environment_id': 5, 'no_share_third_party': 0})
+        self.see_sent_params('POST', {'environment_id': 5, 'no_share_third_party': 1, 'allow_community_access': 1})

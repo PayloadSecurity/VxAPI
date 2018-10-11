@@ -39,7 +39,7 @@ class CliMsgPrinter:
     @staticmethod
     def print_usage_info(api_usage_limits, api_usage, is_api_limit_reached):
         print(Color.control('API Limits for used API Key'))
-        print('Webservice API usage limits: {}'.format(api_usage_limits))  # TODO - add submission limits there
+        print('Webservice API usage limits: {}'.format(api_usage_limits))
         print('Current API usage: {}'.format(json.dumps(api_usage)))
         print('Is limit reached: {}'.format(Color.success('No') if is_api_limit_reached is False else Color.error('Yes')))
 

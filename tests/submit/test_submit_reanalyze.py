@@ -28,4 +28,4 @@ class TestSubmitReanalyze(BaseTest):
         run_command(self.get_action_name(), 'some_tmp_id', '-v')
         self.see_headers()
         self.see_response(self.expected_response)
-        self.see_sent_params('POST', {'id': 'some_tmp_id', 'no_share_third_party': 0})
+        self.see_sent_params('POST', {'id': 'some_tmp_id', 'no_share_third_party': 1})

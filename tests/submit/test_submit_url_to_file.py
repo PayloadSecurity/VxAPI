@@ -27,4 +27,4 @@ class TestSubmitUrlToFile(BaseTest):
         run_command(self.get_action_name(), 'example.com', '5', '-v')
         self.see_headers()
         self.see_response(self.expected_response)
-        self.see_sent_params('POST', {'url': 'example.com', 'environment_id': 5, 'no_share_third_party': 0})
+        self.see_sent_params('POST', {'url': 'example.com', 'environment_id': 5, 'no_share_third_party': 1, 'allow_community_access': 1})

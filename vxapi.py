@@ -218,7 +218,7 @@ class CliManager:
     def prepare_parser(self, current_key_json, map_of_available_actions):
         parser = argparse.ArgumentParser(description=Color.control_without_arrows('{} [{}]'.format(self.program_name, self.program_version)), formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
         parser.add_argument('--version', '-ver', action='version', version='{} - version {}'.format(self.program_name, self.program_version))
-        DefaultCliArguments(parser).add_help_argument()
+        DefaultCliArguments(parser).add_help_opt()
 
         subparsers = parser.add_subparsers(help='Action names for \'{}\' auth level'.format(current_key_json['auth_level_name']), dest="chosen_action")
 

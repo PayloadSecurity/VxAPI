@@ -28,4 +28,4 @@ class TestScanConvertToFull(BaseTest):
         run_command(self.get_action_name(), 'test', '5', '-v')
         self.see_headers()
         self.see_response(self.expected_response)
-        self.see_sent_params('POST', {'environment_id': 5})
+        self.see_sent_params('POST', {'environment_id': 5, 'no_share_third_party': 1, 'allow_community_access': 1})

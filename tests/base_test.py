@@ -24,6 +24,7 @@ class BaseTest(object):
             output = output.decode('utf-8')
             self.output = output
             self.code = p.returncode
+            print(output)
 
             return [p.returncode, output]
 

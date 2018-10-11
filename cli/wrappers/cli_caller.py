@@ -34,9 +34,9 @@ class CliCaller:
 
     def add_parser_args(self, child_parser):
         parser_argument_builder = self.build_argument_builder(child_parser)
-        parser_argument_builder.add_verbose_argument()
-        parser_argument_builder.add_help_argument()
-        parser_argument_builder.add_quiet_argument()
+        parser_argument_builder.add_verbose_arg()
+        parser_argument_builder.add_help_opt()
+        parser_argument_builder.add_quiet_opt()
 
         return parser_argument_builder
 
@@ -55,10 +55,6 @@ class CliCaller:
 
         if 'file' in args:
             del args_to_send['file'] # attaching file is handled by separated method
-
-        for param in ['no_share_third_party', 'allowCommunityAccess']:
-            if param in args:
-                args_to_send[param] = 1 if args[param] == 'yes' else 0
 
         if self.api_object.request_method_name == ApiCaller.CONST_REQUEST_METHOD_GET:
             self.api_object.attach_params(args_to_send)

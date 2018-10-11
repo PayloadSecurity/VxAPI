@@ -1,3 +1,4 @@
+import argparse
 from cli.arguments_builders.default_cli_arguments import DefaultCliArguments
 
 
@@ -22,7 +23,20 @@ class SearchCliArguments(DefaultCliArguments):
         self.parser.add_argument('--verdict', type=str, help='Verdict', choices={1: 'whitelisted', 2: 'no verdict', 3: 'no specific threat', 4: 'suspicious', 5: 'malicious'})
 
     def add_search_term_av_detect_opt(self):
-        self.parser.add_argument('--av-detect', type=str, help='AV Multiscan range e.g. 50-70 (min 0, max 100)') # TODO - add some validator here
+        def type_av_detect(value):
+            if value.find('-'):
+                values = value.split('-')
+            else:
+                values = [value]
+
+            for iter_value in values:
+                forced_int_value = int(iter_value)
+                if forced_int_value < 0 or forced_int_value > 100:
+                    raise argparse.ArgumentTypeError('{} is not a value between {} and {}'.format(iter_value, 0, 100))
+
+            return value
+
+        self.parser.add_argument('--av-detect', type=type_av_detect, help='AV Multiscan range e.g. 50-70 (min 0, max 100)')
 
     def add_search_term_vx_family_opt(self):
         self.parser.add_argument('--vx-family', type=str, help='AV Family Substring e.g. nemucod')

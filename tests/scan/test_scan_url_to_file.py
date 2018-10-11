@@ -28,4 +28,4 @@ class TestScanUrlToFile(BaseTest):
         run_command(self.get_action_name(), 'example.com', 'all', '-v')
         self.see_headers()
         self.see_response(self.expected_response)
-        self.see_sent_params('POST', {'url': 'example.com', 'scan_type': 'all'})
+        self.see_sent_params('POST', {'url': 'example.com', 'scan_type': 'all', 'no_share_third_party': 1, 'allow_community_access': 1})
