@@ -1,8 +1,6 @@
 from api.callers.api_caller import ApiCaller
-from exceptions import FilesSavingMethodNotDeclaredError
 from exceptions import ResponseTextContentTypeError
 from colors import Color
-import errno
 import os
 import json
 from cli.arguments_builders.default_cli_arguments import DefaultCliArguments
