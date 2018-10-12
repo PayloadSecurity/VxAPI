@@ -12,7 +12,7 @@ class TestGetRefreshedOverview(BaseTest):
     expected_response = {'pies': 'to'}
 
     def get_action_name(self):
-        return 'overview_get_refreshed'
+        return 'overview_refresh'
 
     def init_request_scenario(self):
         os.environ['TEST_SCENARIO'] = 'overview.overview_refresh'

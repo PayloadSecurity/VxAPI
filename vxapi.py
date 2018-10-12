@@ -153,9 +153,9 @@ class CliManager:
             (ACTION_KEY_CURRENT, CliKeyCurrent(ApiKeyCurrent(config['api_key'], config['server']), ACTION_KEY_CURRENT)),
 
             (ACTION_OVERVIEW_GET, CliOverview(ApiOverview(config['api_key'], config['server']), ACTION_OVERVIEW_GET)),
-            (ACTION_OVERVIEW_GET_REFRESH, CliOverviewRefresh(ApiOverviewRefresh(config['api_key'], config['server']), ACTION_OVERVIEW_GET_REFRESH)),
             (ACTION_OVERVIEW_GET_SAMPLE, CliOverviewSample(ApiOverviewSample(config['api_key'], config['server']), ACTION_OVERVIEW_GET_SAMPLE)),
             (ACTION_OVERVIEW_GET_SUMMARY, CliOverviewSummary(ApiOverviewSummary(config['api_key'], config['server']), ACTION_OVERVIEW_GET_SUMMARY)),
+            (ACTION_OVERVIEW_REFRESH, CliOverviewRefresh(ApiOverviewRefresh(config['api_key'], config['server']), ACTION_OVERVIEW_REFRESH)),
 
             (ACTION_REPORT_GET_BULK_DEMO, CliReportDemoBulk(ApiReportDemoBulk(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_DEMO)),
             (ACTION_REPORT_GET_BULK_SUMMARY, CliReportBulkSummary(ApiReportBulkSummary(config['api_key'], config['server']), ACTION_REPORT_GET_BULK_SUMMARY)),
@@ -207,7 +207,7 @@ class CliManager:
         api_key_data_json_response = api_object_key_current.get_response_json()
 
         if api_object_key_current.get_response_status_code() != 200 or bool(api_key_data_json_response) is False:
-            base_error_message = 'Can\'t retrieve _data for given API Key \'{}\' in the webservice: \'{}\'. Response status code: \'{}\''.format(config['api_key'], config['server'], api_object_key_current.get_response_status_code())
+            base_error_message = 'Can\'t retrieve data for given API Key \'{}\' in the webservice: \'{}\'. Response status code: \'{}\''.format(config['api_key'], config['server'], api_object_key_current.get_response_status_code())
             if 'message' in api_key_data_json_response:
                 base_error_message += '. Response message: \'{}\''.format(api_key_data_json_response['message'])
 

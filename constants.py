@@ -4,7 +4,7 @@ ACTION_SEARCH_STATES = 'search_states'
 ACTION_SEARCH_TERMS = 'search_terms'
 
 ACTION_OVERVIEW_GET = 'overview_get'
-ACTION_OVERVIEW_GET_REFRESH = 'overview_get_refreshed'
+ACTION_OVERVIEW_REFRESH = 'overview_refresh'
 ACTION_OVERVIEW_GET_SUMMARY = 'overview_get_summary'
 ACTION_OVERVIEW_GET_SAMPLE = 'overview_download_sample'
 
