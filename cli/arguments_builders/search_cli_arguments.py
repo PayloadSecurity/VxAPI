@@ -20,7 +20,7 @@ class SearchCliArguments(DefaultCliArguments):
         self.parser.add_argument('--country', type=str, help='Country (3 digit ISO) e.g. swe')
 
     def add_search_term_verdict_opt(self):
-        self.parser.add_argument('--verdict', type=str, help='Verdict', choices={1: 'whitelisted', 2: 'no verdict', 3: 'no specific threat', 4: 'suspicious', 5: 'malicious'})
+        self.parser.add_argument('--verdict', type=int, help='Verdict', choices={1: 'whitelisted', 2: 'no verdict', 3: 'no specific threat', 4: 'suspicious', 5: 'malicious'})
 
     def add_search_term_av_detect_opt(self):
         def type_av_detect(value):
