@@ -38,10 +38,26 @@ class CliMsgPrinter:
 
     @staticmethod
     def print_usage_info(api_usage_limits, api_usage, is_api_limit_reached):
-        print(Color.control('API Limits for used API Key'))
+        print(Color.control('API query limits for used API Key'))
         print('Webservice API usage limits: {}'.format(api_usage_limits))
         print('Current API usage: {}'.format(json.dumps(api_usage)))
         print('Is limit reached: {}'.format(Color.success('No') if is_api_limit_reached is False else Color.error('Yes')))
+
+    @staticmethod
+    def print_submission_limit_info(submission_limits_data):
+        if submission_limits_data:
+            print(Color.control('Submission limits for used API Key'))
+            print('Webservice API usage limits: {}'.format(submission_limits_data['total']['quota']))
+            print('Current API usage: {}'.format(json.dumps(submission_limits_data['total']['used'])))
+            print('Is limit reached: {}'.format(Color.success('No') if submission_limits_data['total']['quota_reached'] is False else Color.error('Yes')))
+
+    @staticmethod
+    def print_quick_scan_limit_info(quick_scan_limits_data):
+        if quick_scan_limits_data:
+            print(Color.control('Quick scan submission limits for used API Key'))
+            print('Webservice API usage limits: {}'.format(quick_scan_limits_data['total']['quota']))
+            print('Current API usage: {}'.format(json.dumps(quick_scan_limits_data['total']['used'])))
+            print('Is limit reached: {}'.format(Color.success('No') if quick_scan_limits_data['total']['quota_reached'] is False else Color.error('Yes')))
 
     @staticmethod
     def print_api_key_info(current_key_json):

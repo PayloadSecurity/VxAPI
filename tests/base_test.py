@@ -32,7 +32,7 @@ class BaseTest(object):
 
     def see_headers(self):
         assert 'Running \'VxWebService Python API Connector\'' in self.output
-        assert 'API Limits for used API Key' in self.output
+        assert 'API query limits for used API Key' in self.output
         assert 'Request was sent at' in self.output
         assert 'Received response at' in self.output
         assert 'Showing response' in self.output

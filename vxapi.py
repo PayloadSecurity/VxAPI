@@ -155,6 +155,8 @@ class CliManager:
         config = self.config
 
         return OrderedDict([
+            (ACTION_CHECK_LIMITS, {'help_description': 'Return all limits data', 'parser_handler': lambda parser: (DefaultCliArguments(parser)).add_help_opt().add_verbose_arg() }),
+
             (ACTION_FEED, CliFeed(ApiFeed(config['api_key'], config['server']), ACTION_FEED)),
             (ACTION_FEED_LATEST, CliFeedLatest(ApiFeedLatest(config['api_key'], config['server']), ACTION_FEED_LATEST)),
 
@@ -231,10 +233,14 @@ class CliManager:
 
         subparsers = parser.add_subparsers(help='Action names for \'{}\' auth level'.format(current_key_json['auth_level_name']), dest="chosen_action")
 
-        for name, cli_object in map_of_available_actions.items():
-            if cli_object.api_object.endpoint_auth_level <= current_key_json['auth_level']:
-                child_parser = subparsers.add_parser(name=name, help=cli_object.help_description, add_help=False)
-                cli_object.add_parser_args(child_parser)
+        for name, value in map_of_available_actions.items():
+            if isinstance(value, dict):
+                child_parser = subparsers.add_parser(name=name, help=value['help_description'], add_help=False)
+                value['parser_handler'](child_parser)
+            elif value.api_object.endpoint_auth_level <= current_key_json['auth_level']:
+                child_parser = subparsers.add_parser(name=name, help=value.help_description, add_help=False)
+                value.add_parser_args(child_parser)
+
         
         return parser
 
@@ -285,22 +291,46 @@ class CliManager:
         args = self.rebuild_args(vars(parser.parse_args()))
         self.loaded_action = args['chosen_action']
 
-        if args['chosen_action'] is not None:
+        if self.loaded_action is not None:
             args_iterations = self.prepare_args_iterations(args)
+
+            submission_limits = json.loads(current_key_response_headers['Submission-Limits']) if 'Submission-Limits' in current_key_response_headers else {}
+            quick_scan_limits = json.loads(current_key_response_headers['Quick-Scan-Limits']) if 'Quick-Scan-Limits' in current_key_response_headers else {}
+            api_limits = json.loads(current_key_response_headers['Api-Limits'])
+
             if_multiple_calls = True if args['chosen_action'] in ACTION_WITH_MULTIPLE_CALL_SUPPORT and len(args['file']) > 1 else False
             cli_object = map_of_available_actions[args['chosen_action']]
 
             if args['verbose'] is True:
-                cli_object.init_verbose_mode()
+                if isinstance(cli_object, dict) is False:
+                    cli_object.init_verbose_mode()
                 start_msg = 'Running \'{}\' in version \'{}\'. Webservice version: \'{}\', API version: \'{}\''.format(self.program_name, self.program_version, current_key_response_headers['Webservice-Version'], current_key_response_headers['Api-Version'])
                 print(Color.control(start_msg))
+
+            if self.loaded_action == ACTION_CHECK_LIMITS:
+                if args['verbose'] is True:
+                    if api_limits:
+                        CliMsgPrinter.print_usage_info(api_limits['limits'], api_limits['used'], api_limits['limit_reached'])
+
+                    CliMsgPrinter.print_submission_limit_info(submission_limits)
+                    CliMsgPrinter.print_quick_scan_limit_info(quick_scan_limits)
+                else:
+                    print(Color.control('API query limits'))
+                    print(api_limits)
+
+                    print(Color.control('Submission limits'))
+                    print(submission_limits)
+
+                    print(Color.control('Quick scan submission limits'))
+                    print(quick_scan_limits)
+
+                print('\n')
+
+                return
 
             CliPrompts.prompt_for_dir_content_submission(args)
             CliPrompts.prompt_for_sharing_confirmation(args, self.config['server'])
             CliHelper.check_if_version_is_supported(args, current_key_response_headers['Webservice-Version'], self.config['server'])
-            submission_limits = json.loads(current_key_response_headers['Submission-Limits']) if 'Submission-Limits' in current_key_response_headers else {}
-            quick_scan_limits = json.loads(current_key_response_headers['Quick-Scan-Limits']) if 'Quick-Scan-Limits' in current_key_response_headers else {}
-            api_limits = json.loads(current_key_response_headers['Api-Limits'])
             number_of_iterations = len(args_iterations)
 
             for index, arg_iter in enumerate(args_iterations):
