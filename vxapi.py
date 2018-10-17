@@ -113,11 +113,17 @@ class CliManager:
         else:
             raise MissingConfigurationError('Configuration is missing. Before running CLI, please copy the file \'config_tpl.py\' from current dir, rename it to \'config.py\', and fill')
 
+        if 'server' not in config or 'api_key' not in config:
+            raise ConfigError('Config does not contain required \'server\' and \'api_key\' keys')
+
         if config['server'].endswith('/'):
             config['server'] = config['server'][:-1]
 
         if config['server'].endswith('vxstream-sandbox.com'):
             config['server'] = config['server'].replace('vxstream-sandbox.com', 'falcon-sandbox.com')
+
+        if len(config['api_key']) < 60:
+            raise ConfigError('Your API Key is not compatible with API v2. Please regenerate it at your profile page or create the new one.')
 
         self.config = config
 
