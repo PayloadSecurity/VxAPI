@@ -114,7 +114,10 @@ class CliManager:
             raise MissingConfigurationError('Configuration is missing. Before running CLI, please copy the file \'config_tpl.py\' from current dir, rename it to \'config.py\', and fill')
 
         if 'server' not in config or 'api_key' not in config:
-            raise ConfigError('Config does not contain required \'server\' and \'api_key\' keys')
+            raise ConfigError('Config does not contain all of required \'server\' and \'api_key\' keys')
+
+        if not config['server'] or not config['api_key']:
+            raise ConfigError('Not all of required config keys(\'server\', \'api_key\') contain values')
 
         if config['server'].endswith('/'):
             config['server'] = config['server'][:-1]
