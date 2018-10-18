@@ -328,7 +328,7 @@ class CliManager:
 
                 return
 
-            CliPrompts.prompt_for_dir_content_submission(args)
+            CliPrompts.prompt_for_dir_content_submission(if_multiple_calls, args)
             CliPrompts.prompt_for_sharing_confirmation(args, self.config['server'])
             CliHelper.check_if_version_is_supported(args, current_key_response_headers['Webservice-Version'], self.config['server'])
             number_of_iterations = len(args_iterations)
