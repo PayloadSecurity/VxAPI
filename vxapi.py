@@ -342,7 +342,6 @@ class CliManager:
                     raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(api_limits['name_of_reached_limit'], api_limits['used'][api_limits['name_of_reached_limit']]))
 
                 if arg_iter['verbose'] is True:
-                    # if arg_iter['chosen_action'] != ACTION_KEY_CURRENT and (if_multiple_calls is False or index == 0) and 'used' in api_limits:
                     if (if_multiple_calls is False or index == 0) and 'used' in api_limits:
                         CliMsgPrinter.print_usage_info(**self.prepare_api_query_usage_data(api_limits))
 
