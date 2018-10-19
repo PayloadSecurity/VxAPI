@@ -22,6 +22,7 @@ if sys.version_info < (3, 4, 0):
 
 try:
     import requests
+    from requests.structures import CaseInsensitiveDict
 except ImportError as exc:
     print(Color.error('\nScript need \'requests\' module to work. Read README.md to resolve the issue \n'))
     exit(1)
@@ -39,6 +40,7 @@ from constants import *
 from exceptions import *
 
 import datetime
+import time
 import os.path
 import json
 
@@ -77,6 +79,9 @@ from cli.cli_helper import CliHelper
 from cli.cli_msg_printer import CliMsgPrinter
 from cli.cli_prompts import CliPrompts
 
+from cli.cli_file_writer import CliFileWriter
+from cli.cli_limits_formatter import CliLimitsFormatter
+
 from _version import __version__
 
 from copy import copy, deepcopy
@@ -103,6 +108,7 @@ class CliManager:
     vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
     request_session = None
     loaded_action = None
+    current_key_file_path = 'cache/current_key.json'
 
     def load_config(self):
         if is_test_env is True:
@@ -155,8 +161,6 @@ class CliManager:
         config = self.config
 
         return OrderedDict([
-            (ACTION_CHECK_LIMITS, {'help_description': 'Return all limits data', 'parser_handler': lambda parser: (DefaultCliArguments(parser)).add_help_opt().add_verbose_arg() }),
-
             (ACTION_FEED, CliFeed(ApiFeed(config['api_key'], config['server']), ACTION_FEED)),
             (ACTION_FEED_LATEST, CliFeedLatest(ApiFeedLatest(config['api_key'], config['server']), ACTION_FEED_LATEST)),
 
@@ -234,13 +238,9 @@ class CliManager:
         subparsers = parser.add_subparsers(help='Action names for \'{}\' auth level'.format(current_key_json['auth_level_name']), dest="chosen_action")
 
         for name, value in map_of_available_actions.items():
-            if isinstance(value, dict):
-                child_parser = subparsers.add_parser(name=name, help=value['help_description'], add_help=False)
-                value['parser_handler'](child_parser)
-            elif value.api_object.endpoint_auth_level <= current_key_json['auth_level']:
+            if value.api_object.endpoint_auth_level <= current_key_json['auth_level']:
                 child_parser = subparsers.add_parser(name=name, help=value.help_description, add_help=False)
                 value.add_parser_args(child_parser)
-
         
         return parser
 
@@ -256,20 +256,6 @@ class CliManager:
             
         return args_iterations
 
-    def prepare_api_query_usage_data(self, api_limits):
-        api_usage = OrderedDict()
-        api_usage_limits = api_limits['limits']
-        is_api_limit_reached = False
-
-        if api_limits['used']:
-            for period, used_limit in api_limits['used'].items():
-                # Given request is made after checking api limits. It means that we have to add 1 to current limits, to simulate that what happen after making requested API call
-                api_usage[period] = used_limit + 1
-                if is_api_limit_reached is False and api_usage[period] == api_usage_limits[period]:
-                    is_api_limit_reached = True
-
-        return {'api_usage_limits': api_usage_limits, 'api_usage': api_usage, 'is_api_limit_reached': is_api_limit_reached}
-
     def rebuild_args(self, args):
         rebuilt_args = {}
         for key, value in args.items():
@@ -277,15 +263,34 @@ class CliManager:
 
         return rebuilt_args
 
+    def get_current_key_data(self):
+        current_time = int(time.time())
+
+        if os.path.exists(self.current_key_file_path):
+            file_handler = open(self.current_key_file_path, 'r')
+            cache_content = json.load(file_handler)
+
+            if cache_content['response']['api_key'] == self.config['api_key'] and cache_content['timestamp'] > current_time - 86400:
+                return cache_content['response'], CaseInsensitiveDict(cache_content['headers'])
+
+        current_key_cli_object = self.check_current_key()
+        self.write_current_key_data_to_cache(current_key_cli_object)
+
+        return current_key_cli_object.api_object.get_response_json(), current_key_cli_object.api_object.get_headers()
+
+    def write_current_key_data_to_cache(self, cli_caller):
+        current_key_json = cli_caller.api_object.get_response_json()
+        current_key_response_headers = cli_caller.api_object.get_headers()
+
+        CliFileWriter.write(os.path.dirname(self.current_key_file_path), os.path.basename(self.current_key_file_path), json.dumps({'timestamp': int(time.time()), 'response': current_key_json, 'headers': dict(current_key_response_headers)}))
+
     def run(self):
         self.request_session = requests.Session()
         self.load_config()
         self.prepare_test_env()
         
         map_of_available_actions = self.get_map_of_available_actions()
-        current_key_cli_object = self.check_current_key()
-        current_key_json = current_key_cli_object.api_object.get_response_json()
-        current_key_response_headers = current_key_cli_object.api_object.get_headers()
+        current_key_json, current_key_response_headers = self.get_current_key_data()
         
         parser = self.prepare_parser(current_key_json, map_of_available_actions)
         args = self.rebuild_args(vars(parser.parse_args()))
@@ -293,10 +298,6 @@ class CliManager:
 
         if self.loaded_action is not None:
             args_iterations = self.prepare_args_iterations(args)
-
-            submission_limits = json.loads(current_key_response_headers['Submission-Limits']) if 'Submission-Limits' in current_key_response_headers else {}
-            quick_scan_limits = json.loads(current_key_response_headers['Quick-Scan-Limits']) if 'Quick-Scan-Limits' in current_key_response_headers else {}
-            api_limits = json.loads(current_key_response_headers['Api-Limits'])
 
             if_multiple_calls = True if args['chosen_action'] in ACTION_WITH_MULTIPLE_CALL_SUPPORT and len(args['file']) > 1 else False
             cli_object = map_of_available_actions[args['chosen_action']]
@@ -306,27 +307,6 @@ class CliManager:
                     cli_object.init_verbose_mode()
                 start_msg = 'Running \'{}\' in version \'{}\'. Webservice version: \'{}\', API version: \'{}\''.format(self.program_name, self.program_version, current_key_response_headers['Webservice-Version'], current_key_response_headers['Api-Version'])
                 print(Color.control(start_msg))
-
-            if self.loaded_action == ACTION_CHECK_LIMITS:
-                if args['verbose'] is True:
-                    if api_limits:
-                        CliMsgPrinter.print_usage_info(api_limits['limits'], api_limits['used'], api_limits['limit_reached'])
-
-                    CliMsgPrinter.print_submission_limit_info(submission_limits)
-                    CliMsgPrinter.print_quick_scan_limit_info(quick_scan_limits)
-                else:
-                    print(Color.control('API query limits'))
-                    print(api_limits)
-
-                    print(Color.control('Submission limits'))
-                    print(submission_limits)
-
-                    print(Color.control('Quick scan submission limits'))
-                    print(quick_scan_limits)
-
-                print('\n')
-
-                return
 
             CliPrompts.prompt_for_dir_content_submission(if_multiple_calls, args)
             CliPrompts.prompt_for_sharing_confirmation(args, self.config['server'])
@@ -338,13 +318,7 @@ class CliManager:
                 iter_cli_object = deepcopy(cli_object)
                 iter_cli_object.attach_args(arg_iter)
 
-                if api_limits and api_limits['limit_reached'] is True:
-                    raise ReachedApiLimitError('Exceeded maximum API requests per {}({}). Please try again later.'.format(api_limits['name_of_reached_limit'], api_limits['used'][api_limits['name_of_reached_limit']]))
-
                 if arg_iter['verbose'] is True:
-                    if (if_multiple_calls is False or index == 0) and 'used' in api_limits:
-                        CliMsgPrinter.print_usage_info(**self.prepare_api_query_usage_data(api_limits))
-
                     if if_multiple_calls is False or index == 0:
                         CliMsgPrinter.print_api_key_info(current_key_json)
 
@@ -361,21 +335,43 @@ class CliManager:
                 elif 'file' in arg_iter:
                     iter_cli_object.attach_file(arg_iter['file'])
 
-                if arg_iter['chosen_action'] != ACTION_KEY_CURRENT:
-                    try:
-                        iter_cli_object.api_object.call(self.request_session, self.vxapi_cli_headers)
-                    except Exception as e:
-                        if if_multiple_calls is True:
-                            CliMsgPrinter.print_error_info(e)
-                        else:
-                            raise e
-                else:
-                    iter_cli_object = current_key_cli_object
+                try:
+                    iter_cli_object.api_object.call(self.request_session, self.vxapi_cli_headers)
+                    if arg_iter['chosen_action'] == ACTION_KEY_CURRENT:
+                        self.write_current_key_data_to_cache(iter_cli_object)
+                except Exception as e:
+                    if if_multiple_calls is True:
+                        CliMsgPrinter.print_error_info(e)
+                    else:
+                        raise e
 
                 if arg_iter['verbose'] is True:
                     CliMsgPrinter.print_response_summary(arg_iter, iter_cli_object, current_iteration)
                 elif if_multiple_calls:
                     print(Color.control('{} - {}'.format(arg_iter['file'].name, current_iteration)))
+
+                api_response_headers = iter_cli_object.api_object.get_api_response().headers
+                submission_limits = json.loads(api_response_headers['Submission-Limits']) if 'Submission-Limits' in api_response_headers else {}
+                quick_scan_limits = json.loads(api_response_headers['Quick-Scan-Limits']) if 'Quick-Scan-Limits' in api_response_headers else {}
+                api_limits = json.loads(api_response_headers['Api-Limits']) if 'Api-Limits' in api_response_headers else {}
+
+                if arg_iter['verbose'] is True:
+                    CliMsgPrinter.print_limits_info(api_limits, 'query')
+                    CliMsgPrinter.print_limits_info(submission_limits, 'submission')
+                    CliMsgPrinter.print_limits_info(quick_scan_limits, 'quick_scan')
+                elif self.loaded_action == ACTION_KEY_CURRENT:
+                    grouped_limits = {'query': api_limits, 'submission': submission_limits, 'quick_scan': quick_scan_limits}
+                    for limit_type, title in {'query': 'API query limits', 'submission': 'Submission limits', 'quick_scan': 'Quick scan submission limits'}.items():
+                        formatted_limits = CliLimitsFormatter.format(grouped_limits[limit_type], limit_type)
+                        if formatted_limits:
+                            pass
+                            print(Color.control(title))
+                            print(formatted_limits)
+
+                    print(Color.control('Response'))
+
+                if arg_iter['verbose'] is True:
+                    CliMsgPrinter.print_showing_response(arg_iter, current_iteration)
 
                 print(iter_cli_object.get_result_msg())
 
@@ -394,7 +390,6 @@ class CliManager:
 def main():
 
     try:
-        # TODO - test the moment when some file privileges are missing....
         # logging.basicConfig(filename='cli.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
         # logging.debug('This message should go to the log file')
         # logging.info('So should this')

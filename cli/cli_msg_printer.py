@@ -1,7 +1,7 @@
 import datetime
 import traceback
 from colors import Color
-import json
+from cli.cli_limits_formatter import CliLimitsFormatter
 
 
 class CliMsgPrinter:
@@ -37,27 +37,33 @@ class CliMsgPrinter:
         print(traceback.format_exc())
 
     @staticmethod
-    def print_usage_info(api_usage_limits, api_usage, is_api_limit_reached):
-        print(Color.control('API query limits for used API Key'))
-        print('Webservice API usage limits: {}'.format(api_usage_limits))
-        print('Current API usage: {}'.format(json.dumps(api_usage)))
-        print('Is limit reached: {}'.format(Color.success('No') if is_api_limit_reached is False else Color.error('Yes')))
+    def print_limits_info(limits_data, limit_type):
+        info_container = {
+            'query': {
+                'title': 'API query limits for used API Key',
+                'available': 'Webservice API usage limits: {}',
+                'used': 'Current API usage: {}',
+            },
+            'submission': {
+                'title': 'Quick scan submission limits for used API Key',
+                'available': 'Submission limits: {}',
+                'used': 'Used submission limits: {}',
+            },
+            'quick_scan': {
+                'title': 'Quick scan submission limits for used API Key',
+                'available': 'Submission limits: {}',
+                'used': 'Used submission limits: {}',
+            },
+        }
+        formatted_limits = CliLimitsFormatter.format(limits_data, limit_type)
 
-    @staticmethod
-    def print_submission_limit_info(submission_limits_data):
-        if submission_limits_data:
-            print(Color.control('Submission limits for used API Key'))
-            print('Webservice API usage limits: {}'.format(submission_limits_data['total']['quota']))
-            print('Current API usage: {}'.format(json.dumps(submission_limits_data['total']['used'])))
-            print('Is limit reached: {}'.format(Color.success('No') if submission_limits_data['total']['quota_reached'] is False else Color.error('Yes')))
+        texts = info_container[limit_type]
 
-    @staticmethod
-    def print_quick_scan_limit_info(quick_scan_limits_data):
-        if quick_scan_limits_data:
-            print(Color.control('Quick scan submission limits for used API Key'))
-            print('Webservice API usage limits: {}'.format(quick_scan_limits_data['total']['quota']))
-            print('Current API usage: {}'.format(json.dumps(quick_scan_limits_data['total']['used'])))
-            print('Is limit reached: {}'.format(Color.success('No') if quick_scan_limits_data['total']['quota_reached'] is False else Color.error('Yes')))
+        if formatted_limits:
+            print(Color.control(texts['title']))
+            print(texts['available'].format(formatted_limits['available']))
+            print(texts['used'].format(formatted_limits['used']))
+            print('Is limit reached: {}'.format(Color.success('No') if formatted_limits['limit_reached'] is False else Color.error('Yes')))
 
     @staticmethod
     def print_api_key_info(current_key_json):
@@ -67,12 +73,14 @@ class CliMsgPrinter:
         if 'user' in current_key_json and current_key_json['user'] is not None:
             print('User: {} ({})'.format(current_key_json['user']['name'], current_key_json['user']['email']))
 
-
     @staticmethod
     def print_response_summary(arg_iter, iter_cli_object, iteration=None):
         print(Color.control('Received response at {}{}'.format(CliMsgPrinter.date_form.format(datetime.datetime.now()), '- {}'.format(iteration) if iteration is not None else '')))
         print('Response status code: {}'.format(iter_cli_object.get_colored_response_status_code()))
         print('Message: {}'.format(iter_cli_object.get_colored_prepared_response_msg()))
+
+    @staticmethod
+    def print_showing_response(arg_iter, iteration=None):
         show_response_msg = 'Showing response'
         if iteration is not None:
             show_response_msg = '{} for file \'{}\' - {}'.format(show_response_msg, arg_iter['file'].name, iteration)

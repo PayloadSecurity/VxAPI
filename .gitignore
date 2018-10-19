@@ -6,3 +6,4 @@ cli_classes/__pycache__/*.pyc
 /output
 *.pyc
 /cli.log
+/cache

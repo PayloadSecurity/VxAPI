@@ -12,7 +12,7 @@ class CliFileWriter:
         CliFileWriter.create_dir_if_not_exists(dir_path)
         retrieved_filename_without_gz_ext, retrieved_file_extension = os.path.splitext(filename)
 
-        mode = 'wb' if content.find(b"\r\n") else 'w'
+        mode = 'wb' if type(content).__name__ == 'bytes' else 'w'
         f_out_name = dir_path
 
         if retrieved_file_extension == '.gz':
