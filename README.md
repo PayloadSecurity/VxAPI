@@ -27,9 +27,13 @@ This version has broad support for all capabilities of VxWebService APIv2 and mu
 - improved file handling
 - test coverage
 
+Example: `python3 vxapi.py scan_file C:\file-repo all`
+
+![Alt text](/img/scan_example.png?raw=true "Falcon Sandbox API CLI Example Bulk Quick Scan")
+
 ### V1
 
-That app version is still supported as long as VxWebService supports it API version. To use it, please switch to `v1` branch.
+The legacy app utilizing the APIv1 is not supported anymore. For backward compatibility, it is still available in the `v1` branch.
 
 Usage
 ---

@@ -9,7 +9,7 @@ class CliPrompts:
                 warning_msg += ' [y/n]'
                 submit_warning = input(warning_msg)
                 if not submit_warning or submit_warning[0].lower() != 'y':
-                    print('You did not indicate approval, exiting ...')
+                    print('You did not indicate approval. Exiting ...')
                     exit(1)
 
     @staticmethod
@@ -17,8 +17,8 @@ class CliPrompts:
         if if_multiple_calls is True:
             number_of_files_to_submit = len(args['file'])
             if args['quiet'] is False and number_of_files_to_submit > 1:
-                warning_msg = 'Are you sure that you want to submit the content of selected directory? It contains {} of files. [y/n]'.format(number_of_files_to_submit)
+                warning_msg = 'Are you sure that you want to submit all files in the specified directory? It contains {} files. [y/n]'.format(number_of_files_to_submit)
                 submit_warning = input(warning_msg)
                 if not submit_warning or submit_warning[0].lower() != 'y':
-                    print('You did not indicate approval, exiting ...')
+                    print('You did not indicate approval. Exiting ...')
                     exit(1)
