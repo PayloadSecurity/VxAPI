@@ -15,7 +15,7 @@ class TestSearchHash(BaseTest):
         return 'search_hash'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'search.search_hash'
+        os.environ['VX_TEST_SCENARIO'] = 'search.search_hash'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

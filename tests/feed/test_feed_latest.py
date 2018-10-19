@@ -16,7 +16,7 @@ class TestFeed(BaseTest):
         return 'feed_get_latest'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'feed.feed_latest'
+        os.environ['VX_TEST_SCENARIO'] = 'feed.feed_latest'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

@@ -14,7 +14,7 @@ class TestScanConvertToFull(BaseTest):
         return 'scan_convert_to_full'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'scan.scan_convert_to_full'
+        os.environ['VX_TEST_SCENARIO'] = 'scan.scan_convert_to_full'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

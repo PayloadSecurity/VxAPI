@@ -14,7 +14,7 @@ class TestSubmitHashForUrl(BaseTest):
         return 'submit_hash_for_url'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'submit.submit_hash_for_url'
+        os.environ['VX_TEST_SCENARIO'] = 'submit.submit_hash_for_url'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

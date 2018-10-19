@@ -16,7 +16,7 @@ class TestKeyCurrent(BaseTest):
         return 'key_get_current'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'key.key_current'
+        os.environ['VX_TEST_SCENARIO'] = 'key.key_current'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

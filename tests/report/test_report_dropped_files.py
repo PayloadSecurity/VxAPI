@@ -15,7 +15,7 @@ class TestReportDroppedFiles(BaseTest):
         return 'report_get_dropped_files'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'report.report_dropped_files'
+        os.environ['VX_TEST_SCENARIO'] = 'report.report_dropped_files'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

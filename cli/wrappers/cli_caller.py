@@ -2,10 +2,10 @@ from api.callers.api_caller import ApiCaller
 from exceptions import ResponseTextContentTypeError
 from colors import Color
 import os
-import json
 from cli.arguments_builders.default_cli_arguments import DefaultCliArguments
 import datetime
 from cli.cli_file_writer import CliFileWriter
+from cli.formatter.cli_json_formatter import CliJsonFormatter
 
 
 class CliCaller:
@@ -77,7 +77,7 @@ class CliCaller:
             raise ResponseTextContentTypeError('Can\'t print result, since it\'s \'text/html\' instead of expected content type with \'{}\' on board.'.format(self.api_object.api_expected_data_type))
 
         if self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_JSON:
-            return self.result_msg_for_json.format(json.dumps(self.api_object.get_response_json(), indent=4, sort_keys=True, ensure_ascii=False))
+            return self.result_msg_for_json.format(CliJsonFormatter.format_to_pretty_string(self.api_object.get_response_json()))
         elif self.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_FILE:
             if self.api_object.if_request_success() is True:
                 return self.get_result_msg_for_files()

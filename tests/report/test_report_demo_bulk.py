@@ -16,7 +16,7 @@ class TestReportDemoBulk(BaseTest):
         return 'report_get_demo_bulk'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'report.report_demo_bulk'
+        os.environ['VX_TEST_SCENARIO'] = 'report.report_demo_bulk'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

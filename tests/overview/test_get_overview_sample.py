@@ -15,7 +15,7 @@ class TestGetOverviewSample(BaseTest):
         return 'overview_download_sample'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'overview.overview_sample'
+        os.environ['VX_TEST_SCENARIO'] = 'overview.overview_sample'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

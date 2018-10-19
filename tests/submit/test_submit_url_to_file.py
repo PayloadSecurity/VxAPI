@@ -13,7 +13,7 @@ class TestSubmitUrlToFile(BaseTest):
         return 'submit_url_to_file'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'submit.submit_url_to_file'
+        os.environ['VX_TEST_SCENARIO'] = 'submit.submit_url_to_file'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

@@ -16,7 +16,7 @@ class TestReportSummary(BaseTest):
         return 'report_get_summary'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'report.report_summary'
+        os.environ['VX_TEST_SCENARIO'] = 'report.report_summary'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

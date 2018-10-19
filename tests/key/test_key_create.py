@@ -13,7 +13,7 @@ class TestKeyCreate(BaseTest):
         return 'key_create'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'key.key_create'
+        os.environ['VX_TEST_SCENARIO'] = 'key.key_create'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

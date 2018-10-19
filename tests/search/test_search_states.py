@@ -16,7 +16,7 @@ class TestSearchStates(BaseTest):
         return 'search_states'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'search.search_states'
+        os.environ['VX_TEST_SCENARIO'] = 'search.search_states'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

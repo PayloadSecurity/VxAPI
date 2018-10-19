@@ -80,21 +80,21 @@ from cli.cli_msg_printer import CliMsgPrinter
 from cli.cli_prompts import CliPrompts
 
 from cli.cli_file_writer import CliFileWriter
-from cli.cli_limits_formatter import CliLimitsFormatter
+from cli.formatter.cli_limits_formatter import CliLimitsFormatter
 
 from _version import __version__
 
 from copy import copy, deepcopy
 
-# os.environ['APP_ENV'] = 'test'
-# os.environ['TEST_CONFIG'] = json.dumps({
+# os.environ['VX_APP_ENV'] = 'test'
+# os.environ['VX_TEST_CONFIG'] = json.dumps({
 #         'api_key': 'test_me_please',
 #         'server': 'mock://my-webservice-instance'
 # })
-# os.environ['TEST_SCENARIO'] = '1'
+# os.environ['VX_TEST_SCENARIO'] = '1'
 
 
-is_test_env = True if 'APP_ENV' in os.environ and os.environ['APP_ENV'] == 'test' else False
+is_test_env = True if 'VX_APP_ENV' in os.environ and os.environ['VX_APP_ENV'] == 'test' else False
 
 if is_test_env is True:
     import requests_mock
@@ -108,11 +108,12 @@ class CliManager:
     vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
     request_session = None
     loaded_action = None
-    current_key_file_path = 'cache/current_key.json'
+    current_key_cache_path_template = 'cache/current_key_{}.json'
+    current_key_sess_cache_file_path = None
 
     def load_config(self):
         if is_test_env is True:
-            config = json.loads(os.environ['TEST_CONFIG'])
+            config = json.loads(os.environ['VX_TEST_CONFIG'])
         elif os.path.exists('config.py'):
             from config import get_config
             config = get_config()
@@ -135,6 +136,7 @@ class CliManager:
             raise ConfigError('Your API Key is not compatible with API v2. Please regenerate it at your profile page or create the new one.')
 
         self.config = config
+        self.current_key_sess_cache_file_path = self.current_key_cache_path_template.format(self.config['api_key'])
 
         return self.config
 
@@ -142,7 +144,7 @@ class CliManager:
         if is_test_env is True:
             adapter = requests_mock.Adapter()
 
-            imported_scenarios = __import__('tests._requests_scenarios.{}'.format(os.environ['TEST_SCENARIO']), fromlist=[None])
+            imported_scenarios = __import__('tests._requests_scenarios.{}'.format(os.environ['VX_TEST_SCENARIO']), fromlist=[None])
 
             for scenario in imported_scenarios.scenarios:
                 scenario['url'] = '{}/api/v2{}'.format(self.config['server'], scenario['url'])
@@ -265,12 +267,13 @@ class CliManager:
 
     def get_current_key_data(self):
         current_time = int(time.time())
+        cache_disabled = True if 'VX_DISABLE_CACHING' in os.environ and os.environ['VX_DISABLE_CACHING'] == '1' else False
 
-        if os.path.exists(self.current_key_file_path):
-            file_handler = open(self.current_key_file_path, 'r')
+        if cache_disabled is False and os.path.exists(self.current_key_sess_cache_file_path):
+            file_handler = open(self.current_key_sess_cache_file_path, 'r')
             cache_content = json.load(file_handler)
 
-            if cache_content['response']['api_key'] == self.config['api_key'] and cache_content['timestamp'] > current_time - 86400:
+            if cache_content['timestamp'] > current_time - 86400:
                 return cache_content['response'], CaseInsensitiveDict(cache_content['headers'])
 
         current_key_cli_object = self.check_current_key()
@@ -282,7 +285,7 @@ class CliManager:
         current_key_json = cli_caller.api_object.get_response_json()
         current_key_response_headers = cli_caller.api_object.get_headers()
 
-        CliFileWriter.write(os.path.dirname(self.current_key_file_path), os.path.basename(self.current_key_file_path), json.dumps({'timestamp': int(time.time()), 'response': current_key_json, 'headers': dict(current_key_response_headers)}))
+        CliFileWriter.write(os.path.dirname(self.current_key_sess_cache_file_path), os.path.basename(self.current_key_sess_cache_file_path), json.dumps({'timestamp': int(time.time()), 'response': current_key_json, 'headers': dict(current_key_response_headers)}))
 
     def run(self):
         self.request_session = requests.Session()
@@ -348,7 +351,7 @@ class CliManager:
                 if arg_iter['verbose'] is True:
                     CliMsgPrinter.print_response_summary(arg_iter, iter_cli_object, current_iteration)
                 elif if_multiple_calls:
-                    print(Color.control('{} - {}'.format(arg_iter['file'].name, current_iteration)))
+                    print(Color.control('{} - {} - {}'.format(arg_iter['file'].name, CliMsgPrinter.date_form.format(datetime.datetime.now()), current_iteration)))
 
                 api_response_headers = iter_cli_object.api_object.get_api_response().headers
                 submission_limits = json.loads(api_response_headers['Submission-Limits']) if 'Submission-Limits' in api_response_headers else {}

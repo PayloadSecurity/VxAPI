@@ -16,7 +16,7 @@ scenarios = [
         "url": "/quick-scan/state",
         "method": "get",
         "status_code": 200,
-        "json": {"there": "is"},
+        "json": [{"available": False, 'name': 'cat'}, {"available": True, 'name': 'parrot'}, {"available": False, 'name': 'qwerty'}],
         "headers": {
             "content-type": "application/json",
             "webservice-version": "8.10",

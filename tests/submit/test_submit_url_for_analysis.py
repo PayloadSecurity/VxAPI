@@ -13,7 +13,7 @@ class TestSubmitUrlForAnalysis(BaseTest):
         return 'submit_url_for_analysis'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'submit.submit_url_for_analysis'
+        os.environ['VX_TEST_SCENARIO'] = 'submit.submit_url_for_analysis'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

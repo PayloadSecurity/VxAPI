@@ -18,7 +18,7 @@ class TestReportScreenshots(BaseTest):
         return 'report_get_screenshots'
 
     def init_request_scenario(self):
-        os.environ['TEST_SCENARIO'] = 'report.report_screenshots'
+        os.environ['VX_TEST_SCENARIO'] = 'report.report_screenshots'
 
     def test_base_query(self, run_command):
         self.init_request_scenario()

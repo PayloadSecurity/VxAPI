@@ -1,7 +1,7 @@
 import datetime
 import traceback
 from colors import Color
-from cli.cli_limits_formatter import CliLimitsFormatter
+from cli.formatter.cli_limits_formatter import CliLimitsFormatter
 
 
 class CliMsgPrinter:
