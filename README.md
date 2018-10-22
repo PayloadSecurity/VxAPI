@@ -13,6 +13,28 @@ The Falcon Sandbox Python API Connector (e.g. for https://www.hybrid-analysis.co
 > Using Debian/Ubuntu OS, this can be done by calling `sudo apt-get install python3-pip`. It will then be available via `pip3`
 > Using Windows, this can be done automatically when installing `python` (proper checkbox on the installer has to be checked). It should be available via `pip` 
 
+Versions
+---
+
+### V2
+
+This version has broad support for all capabilities of VxWebService APIv2 and much more. New features include:
+
+- support for APIv2
+- improved application performance
+- unified and simplified CLI schema
+- bulk quick scan and sandbox submissions
+- improved file handling
+- test coverage
+
+Example: `python3 vxapi.py scan_file C:\file-repo all`
+
+![Alt text](/img/scan_example.png?raw=true "Falcon Sandbox API CLI Example Bulk Quick Scan")
+
+### V1
+
+The legacy app utilizing the APIv1 is not supported anymore. For backward compatibility, it is still available in the `v1` branch.
+
 Usage
 ---
 
@@ -22,12 +44,11 @@ Copy the `config_tpl.py` and name it `config.py`.
 
 The configuration file specifies a triplet of api key/secret and server:
 
-- api_key
-- api_secret
-- server - full url of the WebService e.g. `https://www.hybrid-analysis.com`
+- api_key (should be compatible with API v2 - should contains at least 60 chars)
+- server - full url of the WebService instance e.g. `https://www.hybrid-analysis.com`
 
 Please fill them with the appropriate data. You can generate a public (restricted) API key by following these instructions:
-https://www.hybrid-analysis.com/apikeys/info
+https://www.hybrid-analysis.com/knowledge-base/issuing-self-signed-api-key
 
 If you have the full version of Falcon Sandbox, create any kind of API key in the admin area:
 https://www.hybrid-analysis.com/apikeys
@@ -79,6 +100,13 @@ After choosing the `action_name`
 > Most Linux OSes have two versions of `python` installed. 
 > To ensure that the program will work correctly, please use `python3`.
 > In Windows after having installed `python`, please add the parent folder to `PATH` environment variable. Now use `python` to callout the script.
+
+### FAQ
+
+##### My API Key authorization level was updated, but VxApi is still showing the old value.
+
+VxApi is caching key data response. To get the fresh one, please remove `cache` directory content and try to use application once again.
+
 
 ### License
 

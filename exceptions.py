@@ -40,3 +40,7 @@ class ReachedApiLimitError(VxError):
 
 class JsonParseError(VxError):
     pass
+
+
+class ConfigError(VxError):
+    pass
