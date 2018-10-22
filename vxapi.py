@@ -351,7 +351,7 @@ class CliManager:
                         raise e
 
                 if arg_iter['verbose'] is True:
-                    CliMsgPrinter.print_response_summary(arg_iter, iter_cli_object, current_iteration)
+                    CliMsgPrinter.print_response_summary(iter_cli_object, current_iteration)
                 elif if_multiple_calls:
                     print(Color.control('{} - {} - {}'.format(arg_iter['file'].name, CliMsgPrinter.date_form.format(datetime.datetime.now()), current_iteration)))
 

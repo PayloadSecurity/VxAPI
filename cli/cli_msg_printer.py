@@ -45,7 +45,7 @@ class CliMsgPrinter:
                 'used': 'Current API usage: {}',
             },
             'submission': {
-                'title': 'Quick scan submission limits for used API Key',
+                'title': 'Submission limits for used API Key',
                 'available': 'Submission limits: {}',
                 'used': 'Used submission limits: {}',
             },
@@ -74,7 +74,7 @@ class CliMsgPrinter:
             print('User: {} ({})'.format(current_key_json['user']['name'], current_key_json['user']['email']))
 
     @staticmethod
-    def print_response_summary(arg_iter, iter_cli_object, iteration=None):
+    def print_response_summary(iter_cli_object, iteration=None):
         print(Color.control('Received response at {}{}'.format(CliMsgPrinter.date_form.format(datetime.datetime.now()), '- {}'.format(iteration) if iteration is not None else '')))
         print('Response status code: {}'.format(iter_cli_object.get_colored_response_status_code()))
         print('Message: {}'.format(iter_cli_object.get_colored_prepared_response_msg()))
