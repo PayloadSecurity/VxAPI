@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-import traceback
 
 from sys import platform
 
@@ -45,7 +44,6 @@ import os.path
 import json
 
 from collections import OrderedDict
-# import cli.arguments_builders
 
 from api.callers.api_caller import ApiCaller
 
@@ -84,7 +82,7 @@ from cli.formatter.cli_limits_formatter import CliLimitsFormatter
 
 from _version import __version__
 
-from copy import copy, deepcopy
+from copy import deepcopy
 
 # os.environ['VX_APP_ENV'] = 'test'
 # os.environ['VX_TEST_CONFIG'] = json.dumps({
@@ -110,6 +108,7 @@ class CliManager:
     loaded_action = None
     current_key_cache_path_template = 'cache/current_key_{}.json'
     current_key_sess_cache_file_path = None
+    cache_disabled = False
 
     def load_config(self):
         if is_test_env is True:
@@ -137,6 +136,8 @@ class CliManager:
 
         self.config = config
         self.current_key_sess_cache_file_path = self.current_key_cache_path_template.format(self.config['api_key'])
+
+        self.cache_disabled = True if 'VX_DISABLE_CACHING' in os.environ and os.environ['VX_DISABLE_CACHING'] == '1' else False
 
         return self.config
 
@@ -267,9 +268,8 @@ class CliManager:
 
     def get_current_key_data(self):
         current_time = int(time.time())
-        cache_disabled = True if 'VX_DISABLE_CACHING' in os.environ and os.environ['VX_DISABLE_CACHING'] == '1' else False
 
-        if cache_disabled is False and os.path.exists(self.current_key_sess_cache_file_path):
+        if self.cache_disabled is False and os.path.exists(self.current_key_sess_cache_file_path):
             file_handler = open(self.current_key_sess_cache_file_path, 'r')
             cache_content = json.load(file_handler)
 
@@ -282,10 +282,12 @@ class CliManager:
         return current_key_cli_object.api_object.get_response_json(), current_key_cli_object.api_object.get_headers()
 
     def write_current_key_data_to_cache(self, cli_caller):
-        current_key_json = cli_caller.api_object.get_response_json()
-        current_key_response_headers = cli_caller.api_object.get_headers()
 
-        CliFileWriter.write(os.path.dirname(self.current_key_sess_cache_file_path), os.path.basename(self.current_key_sess_cache_file_path), json.dumps({'timestamp': int(time.time()), 'response': current_key_json, 'headers': dict(current_key_response_headers)}))
+        if self.cache_disabled is False:
+            current_key_json = cli_caller.api_object.get_response_json()
+            current_key_response_headers = cli_caller.api_object.get_headers()
+
+            CliFileWriter.write(os.path.dirname(self.current_key_sess_cache_file_path), os.path.basename(self.current_key_sess_cache_file_path), json.dumps({'timestamp': int(time.time()), 'response': current_key_json, 'headers': dict(current_key_response_headers)}))
 
     def run(self):
         self.request_session = requests.Session()

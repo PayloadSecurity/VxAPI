@@ -4,6 +4,7 @@ import subprocess
 import pytest
 import os
 import hashlib
+import shutil
 
 
 class BaseTest(object):
@@ -66,4 +67,12 @@ class BaseTest(object):
         file_handler = open(final_output_path, mode)
 
         assert hashlib.sha256(file_handler.read()).hexdigest() == expected_file_hash
+
+    def remove_dir_content(self, dir_path): # TODO - move that logic to separated class, which is outside the test env
+        for file in os.listdir(dir_path):
+            file_path = os.path.join(dir_path, file)
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
 

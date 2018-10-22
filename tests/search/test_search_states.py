@@ -1,5 +1,4 @@
 import pytest
-import subprocess
 import os
 
 from base_test import BaseTest

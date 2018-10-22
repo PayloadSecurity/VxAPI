@@ -75,10 +75,10 @@ class ApiCaller:
         self.files = files
 
     def if_request_success(self):
-        return int(int(self.api_response.status_code) / 200) == 1  # 20x status code
+        return str(self.api_response.status_code).startswith('2')  # 20x status code
 
     def if_request_redirect(self):
-        return int(int(self.api_response.status_code) / 300) == 1  # 30x status code
+        return str(self.api_response.status_code).startswith('3')  # 30x status code
 
     def prepare_response_msg(self) -> str:
         if self.api_response is None:
