@@ -101,6 +101,13 @@ After choosing the `action_name`
 > To ensure that the program will work correctly, please use `python3`.
 > In Windows after having installed `python`, please add the parent folder to `PATH` environment variable. Now use `python` to callout the script.
 
+### FAQ
+
+##### My API Key authorization level was updated, but VxApi is still showing the old value.
+
+VxApi is caching key data response. To get the fresh one, please remove `cache` directory content and try to use application once again.
+
+
 ### License
 
 Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
