@@ -2,7 +2,7 @@ from exceptions import OptionNotDeclaredError
 from exceptions import ResponseObjectNotExistError
 from exceptions import UrlBuildError
 from exceptions import JsonParseError
-from requests.auth import HTTPBasicAuth
+from exceptions import ConfigError
 import json
 
 
@@ -57,7 +57,10 @@ class ApiCaller:
         caller_function = getattr(request_handler, self.request_method_name)
         headers['api-key'] = self.api_key
 
-        self.api_response = caller_function(self.get_full_endpoint_url(), data=self.data, params=self.params, files=self.files, headers=headers, verify=False)
+        self.api_response = caller_function(self.get_full_endpoint_url(), data=self.data, params=self.params, files=self.files, headers=headers, verify=False, allow_redirects=False)
+        if self.if_request_redirect():
+            raise ConfigError('Got redirect while trying to reach server URL. Please try to update it and pass the same URL base which is visible in the browser URL bar. '
+                              'For example: it should be \'https://www.hybrid-analysis.com\', instead of \'http://www.hybrid-analysis.com\' or \'https://hybrid-analysis.com\'')
         self.api_result_msg = self.prepare_response_msg()
 
     def attach_data(self, options):
@@ -73,6 +76,9 @@ class ApiCaller:
 
     def if_request_success(self):
         return int(int(self.api_response.status_code) / 200) == 1  # 20x status code
+
+    def if_request_redirect(self):
+        return int(int(self.api_response.status_code) / 300) == 1  # 30x status code
 
     def prepare_response_msg(self) -> str:
         if self.api_response is None:
