@@ -364,16 +364,6 @@ class CliManager:
                     CliMsgPrinter.print_limits_info(api_limits, 'query')
                     CliMsgPrinter.print_limits_info(submission_limits, 'submission')
                     CliMsgPrinter.print_limits_info(quick_scan_limits, 'quick_scan')
-                elif self.loaded_action == ACTION_KEY_CURRENT:
-                    grouped_limits = {'query': api_limits, 'submission': submission_limits, 'quick_scan': quick_scan_limits}
-                    for limit_type, title in {'query': 'API query limits', 'submission': 'Submission limits', 'quick_scan': 'Quick scan submission limits'}.items():
-                        formatted_limits = CliLimitsFormatter.format(grouped_limits[limit_type], limit_type)
-                        if formatted_limits:
-                            pass
-                            print(Color.control(title))
-                            print(formatted_limits)
-
-                    print(Color.control('Response'))
 
                 if arg_iter['verbose'] is True:
                     CliMsgPrinter.print_showing_response(arg_iter, current_iteration)

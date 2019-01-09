@@ -107,6 +107,10 @@ After choosing the `action_name`
 
 VxApi is caching key data response. To get the fresh one, please remove `cache` directory content and try to use application once again.
 
+##### How can I run tests attached to the project?
+
+You should to call `pytest` from the project root directory. (installed testing library should is required) 
+
 
 ### License
 
