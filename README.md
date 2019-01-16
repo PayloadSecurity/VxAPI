@@ -117,4 +117,4 @@ You should to call `pytest` from the project root directory. (installed testing 
 Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
 see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
 
-Copyright (C) 2018 Hybrid Analysis GmbH
+Copyright (C) 2019 Hybrid Analysis GmbH
