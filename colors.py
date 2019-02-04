@@ -1,24 +1,45 @@
 from colorama import Fore, Back, Style
+import sys
 
 
 class Color:
 
     @staticmethod
+    def is_atty():
+        if hasattr(sys.stderr, 'isatty') and not sys.stderr.isatty():
+            return False
+
+        if hasattr(sys.stdout, 'isatty') and not sys.stdout.isatty():
+            return False
+
+        return True
+
+    @staticmethod
     def error(text):
-        return Back.RED + str(text) + Style.RESET_ALL
+        text = str(text)
+
+        return Back.RED + text + Style.RESET_ALL if Color.is_atty() else text
 
     @staticmethod
     def control(text):
-        return Fore.YELLOW + '\n<<< ' + str(text) + ' >>>\n\r' + Style.RESET_ALL
+        text = '\n<<< ' + str(text) + ' >>>\n\r'
+
+        return Fore.YELLOW + text + Style.RESET_ALL if Color.is_atty() else text
 
     @staticmethod
     def control_without_arrows(text):
-        return Fore.YELLOW + str(text) + Style.RESET_ALL
+        text = str(text)
+
+        return Fore.YELLOW + text + Style.RESET_ALL if Color.is_atty() else text
 
     @staticmethod
     def warning(text):
-        return Back.YELLOW + '\n\n<<< Warning: ' + str(text) + ' >>>\n'  + Style.RESET_ALL
+        text = '\n\n<<< Warning: ' + str(text) + ' >>>\n'
+
+        return Back.YELLOW + text + Style.RESET_ALL if Color.is_atty() else text
 
     @staticmethod
     def success(text):
-        return Back.GREEN + str(text) + Style.RESET_ALL
+        text = str(text)
+
+        return Back.GREEN + text + Style.RESET_ALL if Color.is_atty() else text

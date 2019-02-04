@@ -2,6 +2,7 @@ import datetime
 import traceback
 from colors import Color
 from cli.formatter.cli_limits_formatter import CliLimitsFormatter
+import sys
 
 
 class CliMsgPrinter:
@@ -32,9 +33,9 @@ class CliMsgPrinter:
 
     @staticmethod
     def print_error_info(e):
-        print(Color.control('During the code execution, error has occurred. Please try again or contact the support.'))
-        print(Color.error('Message: \'{}\'.').format(str(e)) + '\n')
-        print(traceback.format_exc())
+        print(Color.control('During the code execution, error has occurred. Please try again or contact the support.'), file=sys.stderr)
+        print(Color.error('Message: \'{}\'.').format(str(e)) + '\n', file=sys.stderr)
+        print(traceback.format_exc(), file=sys.stderr)
 
     @staticmethod
     def print_limits_info(limits_data, limit_type):
