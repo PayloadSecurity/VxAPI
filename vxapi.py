@@ -368,7 +368,7 @@ class CliManager:
                 if arg_iter['verbose'] is True:
                     CliMsgPrinter.print_showing_response(arg_iter, current_iteration)
 
-                print(iter_cli_object.get_result_msg())
+                sys.stdout.buffer.write(iter_cli_object.get_result_msg().encode())
 
                 if iter_cli_object.api_object.if_request_success() is False and if_multiple_calls is True and iter_cli_object.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_JSON:
                     response_json = iter_cli_object.api_object.get_response_json()
@@ -376,8 +376,7 @@ class CliManager:
                         raise Exception('Requests exceeded maximum API requests, the rest of the unsubmitted files won\'t be processed, exiting ...')
                 iter_cli_object.do_post_processing()
 
-                if arg_iter['verbose'] is True:
-                    print('\n')
+                sys.stdout.write('\n')
         else:
             print(Color.control('No option was selected. To check CLI options, run script in help mode: \'{} -h\''.format(__file__)))
 
