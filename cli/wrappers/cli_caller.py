@@ -59,8 +59,11 @@ class CliCaller:
         else:  # POST
             self.api_object.attach_data(args_to_send)
 
-    def attach_file(self, file_handler):
-        self.api_object.attach_files({'file': file_handler})  # it's already stored as file handler
+    def attach_file(self, file):
+        if isinstance(file, str):
+            file = open(file, 'rb')
+
+        self.api_object.attach_files({'file': file})  # it's already stored as file handler
 
     def get_colored_response_status_code(self):
         response_code = self.api_object.get_response_status_code()

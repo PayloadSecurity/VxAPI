@@ -63,7 +63,6 @@ class DefaultCliArguments:
     def add_submit_files_arg(self):
         def validate_path(path):
             files = [path]
-            files_as_handlers = []
             if os.path.exists(path) is False:
                 raise argparse.ArgumentTypeError('No such file or directory: \'{}\''.format(path))
 
@@ -75,10 +74,7 @@ class DefaultCliArguments:
 
                 files = list(filter(lambda path: os.path.isfile(path), ['{}/{}'.format(abs_path, x) for x in os.listdir(path)]))
 
-            for file in files:
-                files_as_handlers.append(open(file, 'rb'))
-
-            return files_as_handlers
+            return files
 
         self.parser.add_argument('file', type=validate_path, help='File to submit (when directory given, all files from it will be submitted - non recursively)')
 
