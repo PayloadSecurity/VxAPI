@@ -84,5 +84,5 @@ class CliMsgPrinter:
     def print_showing_response(arg_iter, iteration=None):
         show_response_msg = 'Showing response'
         if iteration is not None:
-            show_response_msg = '{} for file \'{}\' - {}'.format(show_response_msg, arg_iter['file'].name, iteration)
+            show_response_msg = '{} for file \'{}\' - {}'.format(show_response_msg, arg_iter['file'] if isinstance(arg_iter['file'], str) else arg_iter['file'].name, iteration)
         print(Color.control(show_response_msg))

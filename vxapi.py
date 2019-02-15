@@ -353,7 +353,7 @@ class CliManager:
                 if arg_iter['verbose'] is True:
                     CliMsgPrinter.print_response_summary(iter_cli_object, current_iteration)
                 elif if_multiple_calls:
-                    print(Color.control('{} - {} - {}'.format(arg_iter['file'], CliMsgPrinter.date_form.format(datetime.datetime.now()), current_iteration)))
+                    print(Color.control('{} - {} - {}'.format(arg_iter['file'] if isinstance(arg_iter['file'], str) else arg_iter['file'].name, CliMsgPrinter.date_form.format(datetime.datetime.now()), current_iteration)))
 
                 api_response_headers = iter_cli_object.api_object.get_api_response().headers
                 submission_limits = json.loads(api_response_headers['Submission-Limits']) if 'Submission-Limits' in api_response_headers else {}
