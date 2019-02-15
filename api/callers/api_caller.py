@@ -149,7 +149,7 @@ class ApiCaller:
                 Let's ignore other cases as for errors like 404, 500, we're getting html page instead.
                 That case should be handled in some other place.
                 '''
-                if self.request_method_name == self.CONST_EXPECTED_DATA_TYPE_JSON:
+                if self.if_request_success() and self.api_expected_data_type == self.CONST_EXPECTED_DATA_TYPE_JSON:
                     raise JsonParseError('Failed to parse response: \'{}\''.format(self.api_response.text))
                 else:
                     self.api_response_json = {}
