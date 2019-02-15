@@ -26,6 +26,10 @@ class UrlBuildError(VxError):
     pass
 
 
+class ExceededApiLimitsError(VxError):
+    pass
+
+
 class MissingConfigurationError(VxError):
     pass
 

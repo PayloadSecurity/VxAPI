@@ -344,37 +344,41 @@ class CliManager:
                     iter_cli_object.api_object.call(self.request_session, self.vxapi_cli_headers)
                     if arg_iter['chosen_action'] == ACTION_KEY_CURRENT:
                         self.write_current_key_data_to_cache(iter_cli_object)
+
+                    if arg_iter['verbose'] is True:
+                        CliMsgPrinter.print_response_summary(iter_cli_object, current_iteration)
+                    elif if_multiple_calls:
+                        print(Color.control('{} - {} - {}'.format(arg_iter['file'] if isinstance(arg_iter['file'], str) else arg_iter['file'].name, CliMsgPrinter.date_form.format(datetime.datetime.now()), current_iteration)))
+
+                    api_response_headers = iter_cli_object.api_object.get_api_response().headers
+                    submission_limits = json.loads(api_response_headers['Submission-Limits']) if 'Submission-Limits' in api_response_headers else {}
+                    quick_scan_limits = json.loads(api_response_headers['Quick-Scan-Limits']) if 'Quick-Scan-Limits' in api_response_headers else {}
+                    api_limits = json.loads(api_response_headers['Api-Limits']) if 'Api-Limits' in api_response_headers else {}
+
+                    if arg_iter['verbose'] is True:
+                        CliMsgPrinter.print_limits_info(api_limits, 'query')
+                        CliMsgPrinter.print_limits_info(submission_limits, 'submission')
+                        CliMsgPrinter.print_limits_info(quick_scan_limits, 'quick_scan')
+
+                    if arg_iter['verbose'] is True:
+                        CliMsgPrinter.print_showing_response(arg_iter, current_iteration)
+
+                    sys.stdout.buffer.write(iter_cli_object.get_result_msg().encode())
+
+                    if iter_cli_object.api_object.if_request_success() is False and if_multiple_calls is True and iter_cli_object.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_JSON:
+                        response_json = iter_cli_object.api_object.get_response_json()
+                        if 'Exceeded maximum API requests' in response_json['message']:
+                            raise ExceededApiLimitsError('Requests exceeded maximum API requests, the rest of the unsubmitted files won\'t be processed, exiting ...')
+                        elif 'Quota limit has been exceeded' in response_json['message']:
+                            raise ExceededApiLimitsError('Requests exceeded maximum quota limit, the rest of the unsubmitted files won\'t be processed, exiting ...')
+                    iter_cli_object.do_post_processing()
+                except ExceededApiLimitsError as e:
+                    raise e
                 except Exception as e:
                     if if_multiple_calls is True:
                         CliMsgPrinter.print_error_info(e)
                     else:
                         raise e
-
-                if arg_iter['verbose'] is True:
-                    CliMsgPrinter.print_response_summary(iter_cli_object, current_iteration)
-                elif if_multiple_calls:
-                    print(Color.control('{} - {} - {}'.format(arg_iter['file'] if isinstance(arg_iter['file'], str) else arg_iter['file'].name, CliMsgPrinter.date_form.format(datetime.datetime.now()), current_iteration)))
-
-                api_response_headers = iter_cli_object.api_object.get_api_response().headers
-                submission_limits = json.loads(api_response_headers['Submission-Limits']) if 'Submission-Limits' in api_response_headers else {}
-                quick_scan_limits = json.loads(api_response_headers['Quick-Scan-Limits']) if 'Quick-Scan-Limits' in api_response_headers else {}
-                api_limits = json.loads(api_response_headers['Api-Limits']) if 'Api-Limits' in api_response_headers else {}
-
-                if arg_iter['verbose'] is True:
-                    CliMsgPrinter.print_limits_info(api_limits, 'query')
-                    CliMsgPrinter.print_limits_info(submission_limits, 'submission')
-                    CliMsgPrinter.print_limits_info(quick_scan_limits, 'quick_scan')
-
-                if arg_iter['verbose'] is True:
-                    CliMsgPrinter.print_showing_response(arg_iter, current_iteration)
-
-                sys.stdout.buffer.write(iter_cli_object.get_result_msg().encode())
-
-                if iter_cli_object.api_object.if_request_success() is False and if_multiple_calls is True and iter_cli_object.api_object.api_expected_data_type == ApiCaller.CONST_EXPECTED_DATA_TYPE_JSON:
-                    response_json = iter_cli_object.api_object.get_response_json()
-                    if 'response_code' in response_json and 'Exceeded maximum API requests' in response_json['response']['error']:
-                        raise Exception('Requests exceeded maximum API requests, the rest of the unsubmitted files won\'t be processed, exiting ...')
-                iter_cli_object.do_post_processing()
 
                 sys.stdout.write('\n')
         else:
