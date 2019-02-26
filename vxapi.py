@@ -42,6 +42,7 @@ import datetime
 import time
 import os.path
 import json
+from importlib.machinery import SourceFileLoader
 
 from collections import OrderedDict
 
@@ -106,18 +107,19 @@ class CliManager:
     vxapi_cli_headers = {'User-agent': 'VxApi CLI Connector'}
     request_session = None
     loaded_action = None
-    current_key_cache_path_template = 'cache/current_key_{}.json'
+    current_key_cache_path_template = '{}/cache/current_key_{}.json'
     current_key_sess_cache_file_path = None
     cache_disabled = False
+    config_path = '{}/config.py'.format(CLI_BASE_PATH)
 
     def load_config(self):
         if is_test_env is True:
             config = json.loads(os.environ['VX_TEST_CONFIG'])
-        elif os.path.exists('config.py'):
-            from config import get_config
-            config = get_config()
+        elif os.path.exists(self.config_path):
+            imported = SourceFileLoader('config', self.config_path).load_module()
+            config = imported.get_config()
         else:
-            raise MissingConfigurationError('Configuration is missing. Before running CLI, please copy the file \'config_tpl.py\' from current dir, rename it to \'config.py\', and fill')
+            raise MissingConfigurationError('Configuration is missing (looked for: {}). Before running CLI, please copy the file \'config_tpl.py\' from current dir, rename it to \'config.py\', and fill'.format(self.config_path))
 
         if 'server' not in config or 'api_key' not in config:
             raise ConfigError('Config does not contain all of required \'server\' and \'api_key\' keys')
@@ -135,7 +137,7 @@ class CliManager:
             raise ConfigError('Your API Key is not compatible with API v2. Please regenerate it at your profile page or create the new one.')
 
         self.config = config
-        self.current_key_sess_cache_file_path = self.current_key_cache_path_template.format(self.config['api_key'])
+        self.current_key_sess_cache_file_path = self.current_key_cache_path_template.format(CLI_BASE_PATH, self.config['api_key'])
 
         self.cache_disabled = True if 'VX_DISABLE_CACHING' in os.environ and os.environ['VX_DISABLE_CACHING'] == '1' else False
 

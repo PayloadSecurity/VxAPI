@@ -6,6 +6,7 @@ from cli.arguments_builders.default_cli_arguments import DefaultCliArguments
 import datetime
 from cli.cli_file_writer import CliFileWriter
 from cli.formatter.cli_json_formatter import CliJsonFormatter
+from constants import CALLED_SCRIPT
 
 
 class CliCaller:
@@ -96,8 +97,26 @@ class CliCaller:
         if output_path.startswith('/') is True:  # Given path is absolute
             final_output_path = output_path
         else:
-            prepared_file_path = os.path.dirname(os.path.realpath(__file__)).split('/')[:-2] + [self.cli_output_folder]
+            path_parts = os.path.dirname(os.path.realpath(__file__)).split('/')[:-2]
+            called_script_dir = os.path.dirname(CALLED_SCRIPT)
+            # It's about a case when user is calling script from not root directory.€
+            if called_script_dir != 'vxapi.py':
+                new_path_parts = []
+                bad_parts = called_script_dir.split('/')
+                for part in reversed(path_parts):
+                    if part in bad_parts:
+                        bad_parts.remove(part)
+                        continue
+                    new_path_parts.append(part)
+
+                new_path_parts.reverse()
+                path_parts = new_path_parts
+
+            prepared_file_path = path_parts + [self.cli_output_folder]
             final_output_path = '/'.join(prepared_file_path)
+
+        if not final_output_path.startswith('/'):
+            final_output_path = '/' + final_output_path
 
         return final_output_path
 
@@ -136,4 +155,4 @@ class CliCaller:
 
         filename = '{}-{}-{}'.format(self.action_name, identifier, api_response.headers['Vx-Filename']) if identifier is not None else '{}-{}'.format(self.action_name, api_response.headers['Vx-Filename'])
 
-        return CliFileWriter.write(self.cli_output_folder, filename, api_response.content)
+        return CliFileWriter.write(self.get_processed_output_path(), filename, api_response.content)

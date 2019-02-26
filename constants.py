@@ -1,3 +1,6 @@
+import os
+import sys
+
 ACTION_SEARCH_HASH = 'search_hash'
 ACTION_SEARCH_HASHES = 'search_hashes'
 ACTION_SEARCH_STATES = 'search_states'
@@ -51,5 +54,7 @@ ACTION_SCAN_URL_FOR_ANALYSIS = 'scan_url_for_analysis'
 ACTION_SCAN_URL_TO_FILE = 'scan_url_to_file'
 
 MINIMAL_SUPPORTED_INSTANCE_VERSION = '8.2'
+CLI_BASE_PATH = os.path.dirname(os.path.realpath(__file__))
+CALLED_SCRIPT = sys.argv[0]
 
 ACTION_WITH_MULTIPLE_CALL_SUPPORT = [ACTION_SUBMIT_FILE, ACTION_SCAN_FILE]

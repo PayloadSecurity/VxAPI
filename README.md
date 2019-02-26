@@ -67,7 +67,7 @@ Windows:
 
     pip install requests
 
-### Install python colorama module, [python-colorama module](http://pypi.python.org/pypi/colorama).
+### Install python colorama module, [python-colorama module](https://pypi.org/project/colorama/).
 
 Debian/Ubuntu OS:
     
