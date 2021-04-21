@@ -3,6 +3,11 @@
 # VxWebService Python API Connector
 The Falcon Sandbox Python API Connector (e.g. for https://www.hybrid-analysis.com/).
 
+## Deprecation Info
+
+In August 2021, it's planned to disable Falcon Sandbox's API v1. Thus VxApi operating on
+that API version, will not work anymore. Please use code from the master branch instead that internally operates on API v2. 
+
 ## Requirements
 
 - [Python](http://www.python.org) >= 3.4.0
@@ -85,4 +90,4 @@ After choosing the `action_name`
 Licensed  GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
 see https://github.com/PayloadSecurity/VxAPI/blob/master/LICENSE.md
 
-Copyright (C) 2018 Hybrid Analysis GmbH
+Copyright (C) 2021 Hybrid Analysis GmbH
