@@ -6,10 +6,8 @@ The Falcon Sandbox Python API Connector (e.g. for https://www.hybrid-analysis.co
 ## Requirements
 
 - [Python](http://www.python.org) >= 3.4.0
-- [python-requests module](http://docs.python-requests.org/en/master/)
-- [python-colorama module](http://pypi.python.org/pypi/colorama)
 
-> To install some of the required python modules, please use the `pip` module manager
+> To install the required python modules, please run `pip install -r requirements.txt`
 > Using Debian/Ubuntu OS, this can be done by calling `sudo apt-get install python3-pip`. It will then be available via `pip3`
 > Using Windows, this can be done automatically when installing `python` (proper checkbox on the installer has to be checked). It should be available via `pip` 
 
